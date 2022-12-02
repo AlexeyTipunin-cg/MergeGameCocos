@@ -18,6 +18,14 @@ export class CellPrefabsFactory extends Component {
         sprite.spriteFrame = this.cellSprites[spiteNum];
         return cellInstance;
     }
+
+    public getCellWidth(): number {
+        return this.cellSprites[0].width;
+    }
+
+    public getCellHeight(): number {
+        return this.cellSprites[0].height;
+    }
 }
 
 

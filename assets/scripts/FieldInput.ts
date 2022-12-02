@@ -1,27 +1,30 @@
-import { _decorator, Component, Node, Input, EventTouch, TiledUserNodeData, UITransform, Vec3 } from 'cc';
-import { Field } from './Field';
+import { _decorator, Component, Node, Input, EventTouch, EventTarget, UITransform, Vec3 } from 'cc';
+import { GameEvents } from './GameEvents';
 const { ccclass, property } = _decorator;
 
 @ccclass('FieldInput')
 export class FieldInput extends Component {
 
-    public field : Field;
+    public onFieldTouch = new EventTarget();
 
     start() {
         this.node.on(Input.EventType.TOUCH_START, this.onTouchStart, this);
     }
 
-    onDestroy(){
+
+    onDestroy() {
         this.node.off(Input.EventType.TOUCH_START, this.onTouchStart, this);
     }
 
-    onTouchStart(event : EventTouch){
+    onTouchStart(event: EventTouch) {
         let pos = event.getUILocation();
         console.log("Pos-----> " + pos);
         let posLocal = this.node.getComponent(UITransform).convertToNodeSpaceAR(new Vec3(pos.x, pos.y, 0));
         console.log("Local pos ->" + posLocal);
-        this.field.getCell(posLocal);
+
+        this.onFieldTouch.emit(GameEvents.onTouchField, posLocal);
     }
+
 }
 
 

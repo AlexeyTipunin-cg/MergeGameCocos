@@ -1,12 +1,11 @@
-import { _decorator, Component, Node, Prefab, UITransform, Vec3 } from 'cc';
-const { ccclass, property } = _decorator;
+import { _decorator, Node, Vec3 } from 'cc';
 
 export class Field {
 
     private width: number;
     private height: number;
-    private row: Number;
-    private col: Number;
+    private row: number;
+    private col: number;
 
     public cells: Node[] = [];
 
@@ -19,20 +18,24 @@ export class Field {
 
 
     public getCell(pos: Vec3): Node {
+        let index = this.posToIndex(pos);
+        return this.cells[index];
+    }
+
+    public removeCell(pos: Vec3): void {
+        let index = this.posToIndex(pos);
+        this.cells[index] = null;
+    }
+
+    private posToIndex(pos: Vec3) {
         let cellWidth = 171;
         let cellHeight = 192;
-        let y = Math.floor(pos.y/cellHeight );
-        let x = Math.floor(pos.x/cellWidth) ;
+        let y = Math.floor(pos.y / this.height);
+        let x = Math.floor(pos.x / this.width);
         console.log("x---->" + x);
         console.log("y---->" + y);
-
-        if (this.cells[y* 9 + x] != null) {
-            this.cells[y* 9 + x].destroy();
-            this.cells[y* 9 + x] = null;
-        }
-
-        return this.cells[y* 9 + x];
-        
+        let index = y * this.row + x;
+        return index;
     }
 }
 
