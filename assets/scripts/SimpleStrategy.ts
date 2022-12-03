@@ -5,28 +5,34 @@ import { Field } from "./Field";
 export class SimpleStrategy {
 
     public calculateKilledCells(field: Field, pos: Vec3) {
-        let index = field.posToIndex(pos);
+        let clickedCell = field.posToIndex(pos);
 
         let visited = new Array(field.cells.length);
         visited.fill(false);
 
 
-        let indexArray: number[] = [index];
+        let indexArray: number[] = [clickedCell];
         let res = []
-        while (indexArray) {
+        while (indexArray.length > 0) {
 
             let curIndex = indexArray.pop();
             if (visited[curIndex]) continue;
-            if (field.cells[curIndex].getComponent(Cell).cellType !== field.cells[index].getComponent(Cell).cellType) continue;
+            if(field.cells[curIndex] === null) continue;
+            if (field.cells[curIndex].getComponent(Cell).cellType !== field.cells[clickedCell].getComponent(Cell).cellType) continue;
 
             res.push(curIndex);
 
             visited[curIndex] = true;
             let nn = this.findNeibours(field, curIndex);
-            indexArray.concat(nn);
+            indexArray = indexArray.concat(nn);
+            console.log(indexArray);
         }
 
-        return res;
+        if (res.length >1) {
+            return res;   
+        }
+
+        return [];
     }
 
     private findNeibours(field: Field, index: number): number[] {
