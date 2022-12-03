@@ -3,6 +3,7 @@ import { CellPrefabsFactory } from './CellPrefabsFactory';
 import { Field } from './Field';
 import { FieldInput } from './FieldInput';
 import { GameEvents } from './GameEvents';
+import { SimpleStrategy } from './SimpleStrategy';
 const { ccclass, property } = _decorator;
 
 @ccclass('Test')
@@ -44,8 +45,6 @@ export class Test extends Component {
                 this.fieldData.cells.push(node);
             }
         }
-
-        console.log("F----->" + this.fieldData);
     }
 
 
@@ -54,11 +53,20 @@ export class Test extends Component {
     }
 
     private onTouchScreen(pos: Vec3) {
-        console.log("F----->" + this.fieldData);
         let cellToDestroy = this.fieldData.getCell(pos);
+        let strategy = new SimpleStrategy();
 
-        if (cellToDestroy != null) {
-            this.fieldData.removeCell(pos)
+        let killedCells = strategy.calculateKilledCells(this.fieldData, pos);
+
+        for (const cellIndex of killedCells) {
+            this.destroyCell(cellIndex);
+        }
+    }
+
+    private destroyCell(index:number){
+        if (this.fieldData.cells[index] != null) {
+            let cellToDestroy = this.fieldData.cells[index];
+            this.fieldData.cells[index] = null;
             cellToDestroy.destroy();
         }
     }

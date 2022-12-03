@@ -4,7 +4,7 @@ export class Field {
 
     private width: number;
     private height: number;
-    private row: number;
+    public row: number;
     private col: number;
 
     public cells: Node[] = [];
@@ -22,14 +22,14 @@ export class Field {
         return this.cells[index];
     }
 
+
+
     public removeCell(pos: Vec3): void {
         let index = this.posToIndex(pos);
         this.cells[index] = null;
     }
 
-    private posToIndex(pos: Vec3) {
-        let cellWidth = 171;
-        let cellHeight = 192;
+    public posToIndex(pos: Vec3) {
         let y = Math.floor(pos.y / this.height);
         let x = Math.floor(pos.x / this.width);
         console.log("x---->" + x);
