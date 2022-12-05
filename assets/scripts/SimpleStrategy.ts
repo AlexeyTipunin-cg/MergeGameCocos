@@ -25,7 +25,6 @@ export class SimpleStrategy {
             visited[curIndex] = true;
             let nn = this.findNeibours(field, curIndex);
             indexArray = indexArray.concat(nn);
-            console.log(indexArray);
         }
 
         if (res.length >1) {

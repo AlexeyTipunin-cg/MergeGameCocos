@@ -10,7 +10,8 @@ export class Cell extends Component {
 export class CellData {
     public type: CellTypes;
     public index: number;
-    
+    public row: number;
+    public col: number;
 }
 
 

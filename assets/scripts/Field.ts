@@ -3,9 +3,9 @@ import { _decorator, Node, Vec3, Vec2 } from 'cc';
 export class Field {
 
     private cellWidth: number;
-    private cellHeight: number;
+    public cellHeight: number;
     public row: number;
-    private col: number;
+    public col: number;
 
     public cells: Node[] = [];
 
@@ -28,11 +28,27 @@ export class Field {
         return new Vec2(x, y);
     }
 
+    public getColumn(columnIndex:number)
+    {
+        let arrCol = []
+        for (let index = columnIndex; index < this.cells.length; index+= this.col){
+            arrCol.push(index);
+        }
+
+        return arrCol
+    }
+
 
 
     public removeCell(pos: Vec3): void {
         let index = this.screenPosToIndex(pos);
         this.cells[index] = null;
+    }
+
+    public indexToFieldPos(index: number){
+        let y = Math.floor(index / this.col);
+        let x = Math.floor(index % this.col);
+        return new Vec3(x * this.cellWidth, y * this.cellHeight);
     }
 
 
