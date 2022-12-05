@@ -1,5 +1,5 @@
 import { _decorator, Component, Node, Sprite, SpriteFrame, math, randomRangeInt, instantiate, Prefab, CCClass, Enum, Color } from 'cc';
-import { Cell } from './Cell';
+import { Cell, CellData } from './Cell';
 import { CellTypes } from './CellTypes';
 import { TypeToImage } from './TypeToImage';
 const { ccclass, property } = _decorator;
@@ -22,7 +22,9 @@ export class CellPrefabsFactory extends Component {
         let spiteNum = randomRangeInt(0, this.cellSprites.length);
         let cellInstance = instantiate(this.cell);
         let sprite = cellInstance.getComponent(Sprite);
-        cellInstance.getComponent(Cell).cellType = this.cellTypes[spiteNum];
+        let cellData = new CellData()
+        cellData.type = this.cellTypes[spiteNum];
+        cellInstance.getComponent(Cell).cellData = cellData;
         sprite.spriteFrame = this.cellSprites[spiteNum];
         return cellInstance;
     }

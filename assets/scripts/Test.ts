@@ -38,18 +38,18 @@ export class Test extends Component {
         this.fieldData = new Field(cellWdith, cellHeight, this.sizeX, this.sizeY);
         for (let y = 0; y < this.sizeY; y++) {
             for (let x = 0; x < this.sizeX; x++) {
-                let node = this.cellsFactory.createCell();
-                node.parent = this.fieldParent;
-                let s: UITransform = node.getComponent(UITransform);
-                node.setPosition(s.width * x, s.height * y);
-                this.fieldData.cells.push(node);
+                let cell = this.createCell(x,y);
+                this.fieldData.cells.push(cell);
             }
         }
     }
 
-
-    onDestroy() {
-        this.input.onFieldTouch.off(GameEvents.onTouchField, this.onTouchScreen, this);
+    private createCell(x: number, y: number) : Node{
+        let node = this.cellsFactory.createCell();
+        node.parent = this.fieldParent;
+        let s: UITransform = node.getComponent(UITransform);
+        node.setPosition(s.width * x, s.height * y);
+        return node;
     }
 
     private onTouchScreen(pos: Vec3) {
@@ -59,6 +59,20 @@ export class Test extends Component {
 
         for (const cellIndex of killedCells) {
             tween(this.fieldData.cells[cellIndex].getComponent(UIOpacity)).to(0.2, {opacity : 0}, {onComplete: () => this.destroyCell(cellIndex)}).start();
+        }
+
+        this.generateNewCells();
+    }
+
+    private generateNewCells(){
+        for (let index = 0; index < this.fieldData.cells.length; index++) {
+            const element = this.fieldData.cells[index];
+            if (element == null){
+                let gridPos = this.fieldData.indexToXY(index);
+                let cell = this.createCell(gridPos.x,gridPos.y);
+                this.fieldData[index] = cell;
+            }
+            
         }
     }
 

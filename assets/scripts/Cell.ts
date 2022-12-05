@@ -4,9 +4,13 @@ const { ccclass, property } = _decorator;
 
 @ccclass('Cell')
 export class Cell extends Component {
+    public cellData: CellData = null;
+}
 
-    @property({ type: CellTypes })
-    public cellType: CellTypes;
+export class CellData {
+    public type: CellTypes;
+    public index: number;
+    
 }
 
 
