@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Sprite, SpriteFrame, math, randomRangeInt, instantiate, Prefab, CCClass, Enum } from 'cc';
+import { _decorator, Component, Node, Sprite, SpriteFrame, math, randomRangeInt, instantiate, Prefab, CCClass, Enum, Color } from 'cc';
 import { Cell } from './Cell';
 import { CellTypes } from './CellTypes';
 import { TypeToImage } from './TypeToImage';

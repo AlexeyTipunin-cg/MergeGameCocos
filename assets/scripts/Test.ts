@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, random, Prefab, instantiate, UITransform, Vec3 } from 'cc';
+import { _decorator, Component, Node, random, Prefab, instantiate, UITransform, Vec3, tween, Sprite, Vec2, UIOpacity } from 'cc';
 import { CellPrefabsFactory } from './CellPrefabsFactory';
 import { Field } from './Field';
 import { FieldInput } from './FieldInput';
@@ -53,17 +53,16 @@ export class Test extends Component {
     }
 
     private onTouchScreen(pos: Vec3) {
-        let cellToDestroy = this.fieldData.getCell(pos);
         let strategy = new SimpleStrategy();
 
         let killedCells = strategy.calculateKilledCells(this.fieldData, pos);
 
         for (const cellIndex of killedCells) {
-            this.destroyCell(cellIndex);
+            tween(this.fieldData.cells[cellIndex].getComponent(UIOpacity)).to(0.2, {opacity : 0}, {onComplete: () => this.destroyCell(cellIndex)}).start();
         }
     }
 
-    private destroyCell(index:number){
+    private destroyCell(index: number) {
         if (this.fieldData.cells[index] != null) {
             let cellToDestroy = this.fieldData.cells[index];
             this.fieldData.cells[index] = null;
