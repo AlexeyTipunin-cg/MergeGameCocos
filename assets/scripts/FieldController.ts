@@ -81,11 +81,11 @@ export class FieldController extends Component {
                     for (const opComponent of opacityComponent) {
                         opComponent.opacity = (target as Vec2).x;
                     }
-                }, onComplete: () => {
-                    killedCells.forEach((value) => this.destroyCell(value));
-                    this.getNewField();
-                    this.blockInput = false;
                 }
+            }).call(() => {
+                killedCells.forEach((value) => this.destroyCell(value));
+                this.getNewField();
+                this.blockInput = false;
             }).start();
         }
     }
