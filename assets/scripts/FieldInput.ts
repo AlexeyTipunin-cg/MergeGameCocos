@@ -18,10 +18,7 @@ export class FieldInput extends Component {
 
     onTouchStart(event: EventTouch) {
         let pos = event.getUILocation();
-        console.log("Pos-----> " + pos);
         let posLocal = this.node.getComponent(UITransform).convertToNodeSpaceAR(new Vec3(pos.x, pos.y, 0));
-        console.log("Local pos ->" + posLocal);
-
         this.onFieldTouch.emit(GameEvents.onTouchField, posLocal);
     }
 

@@ -28,6 +28,10 @@ export class Field {
         return new Vec2(x, y);
     }
 
+    public XYToindex(x: number, y: number): number {
+        return y * this.row + x;
+    }
+
     public getColumn(columnIndex: number) {
         let arrCol = []
         for (let index = columnIndex; index < this.cells.length; index += this.col) {

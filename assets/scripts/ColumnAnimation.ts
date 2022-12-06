@@ -1,4 +1,5 @@
 import { tween, Vec2, Node, TweenAction, Tween, TweenSystem, tweenUtil } from "cc";
+import { AnimationData } from "./AnimationData";
 import { Field } from "./Field";
 
 export class ColumnAnimation {
@@ -13,6 +14,17 @@ export class ColumnAnimation {
             let time = (vec.x - vec.y) * fieldData.cellHeight / speed;
             let t = tween(cell).tag(100).to(time, { position: newPos }).start();
             this.tweens.push(TweenSystem.instance.ActionManager.getActionByTag(100, cell))
+        }
+    }
+
+    public animateNewCells(speed: number, animDatas: AnimationData[], fieldData: Field) {
+
+        this.tweens = []
+        for (let index = 0; index < animDatas.length; index++) {
+            const vec = animDatas[index];
+            let newPos = fieldData.indexToFieldPos(vec.to);
+            let time = (vec.from - vec.to) * fieldData.cellHeight / speed;
+            let t = tween(vec.target).tag(100).to(time, { position: newPos }).start();
         }
     }
 

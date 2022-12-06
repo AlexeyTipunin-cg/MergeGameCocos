@@ -1,4 +1,5 @@
 import { _decorator, Component, Node, random, Prefab, instantiate, UITransform, Vec3, tween, Sprite, Vec2, UIOpacity, CCInteger, CCFloat, Tween, TweenAction, TweenSystem } from 'cc';
+import { AnimationData } from './AnimationData';
 import { CellPrefabsFactory } from './CellPrefabsFactory';
 import { ColumnAnimation } from './ColumnAnimation';
 import { Field } from './Field';
@@ -84,7 +85,6 @@ export class FieldController extends Component {
                 }, onComplete: () => {
                     killedCells.forEach((value) => this.destroyCell(value));
                     this.getNewField();
-                    this.generateNewCells();
                     this.blockInput = false;
                 }
             }).start();
@@ -92,8 +92,31 @@ export class FieldController extends Component {
     }
 
     private generateNewCells() {
+        let moveAnimaData = new Array(this.fieldData.col);
+        for (let colIndex = 0; colIndex < this.fieldData.col; colIndex++) {
+            let colIndecies = this.fieldData.getColumn(colIndex);
+            let newIndex = 0;
+
+            moveAnimaData[colIndex] = [];
 
 
+            for (const index of colIndecies) {
+                let cell = this.fieldData.cells[index];
+                if (!cell) {
+                    let createPos = this.fieldData.row + newIndex;
+                    let n = this.createCell(colIndex, createPos);
+                    let animData = new AnimationData();
+                    animData.target = n;
+                    animData.from = this.fieldData.XYToindex(colIndex, createPos);
+                    animData.to = index;
+                    moveAnimaData[colIndex].push(animData);
+                    this.fieldData.cells[index] = n;
+                    newIndex++;
+                }
+            }
+        }
+
+        this.animation.animateNewCells(this.speed, moveAnimaData, this.fieldData);
     }
 
     private getNewField() {
@@ -105,6 +128,8 @@ export class FieldController extends Component {
         }
 
         this.fieldData.cells = changedField;
+
+        this.generateNewCells();
 
         this.animation.animateField(this.speed, moveArrs, fieldCopy, this.fieldData);
     }

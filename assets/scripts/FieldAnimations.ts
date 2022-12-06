@@ -1,4 +1,5 @@
 import { tween, Vec2, Node, Component, animation } from "cc";
+import { AnimationData } from "./AnimationData";
 import { ColumnAnimation } from "./ColumnAnimation";
 import { Field } from "./Field";
 
@@ -12,6 +13,18 @@ export class FieldAnimations {
             if (column.length > 0) {
                 let animation = new ColumnAnimation();
                 animation.animateRow(speed, column, oldField, fieldData);
+                this.animations.push(animation);
+            }
+        }
+    }
+
+    public animateNewCells(speed: number, animDatas: AnimationData[][], fieldData: Field) {
+        this.animations = []
+
+        for (const column of animDatas) {
+            if (column.length > 0) {
+                let animation = new ColumnAnimation();
+                animation.animateNewCells(speed, column, fieldData);
                 this.animations.push(animation);
             }
         }
