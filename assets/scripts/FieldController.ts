@@ -64,8 +64,8 @@ export class FieldController extends Component {
 
     private onTouchScreen(pos: Vec3) {
 
-        if (!this.animation.isCompleted || this.blockInput) {
-            return
+        if (!this.animation.isCompleted() || this.blockInput) {
+            return;
         }
 
         let strategy = new SimpleStrategy();
@@ -91,8 +91,8 @@ export class FieldController extends Component {
         }
     }
 
-    private generateNewCells() {
-        let moveAnimaData = new Array(this.fieldData.col);
+    private generateNewCells(): AnimationData[][] {
+        let moveAnimaData: AnimationData[][] = new Array(this.fieldData.col);
         for (let colIndex = 0; colIndex < this.fieldData.col; colIndex++) {
             let colIndecies = this.fieldData.getColumn(colIndex);
             let newIndex = 0;
@@ -116,28 +116,32 @@ export class FieldController extends Component {
             }
         }
 
-        this.animation.animateNewCells(this.speed, moveAnimaData, this.fieldData);
+        return moveAnimaData;
     }
 
     private getNewField() {
-        let fieldCopy = Object.assign([], this.fieldData.cells);
         let changedField = Object.assign([], this.fieldData.cells);
-        let moveArrs = new Array(this.fieldData.col);
+        let moveArrs: AnimationData[][] = new Array(this.fieldData.col);
         for (let index = 0; index < this.fieldData.col; index++) {
             moveArrs[index] = this.packColumn(index, changedField);
         }
 
         this.fieldData.cells = changedField;
 
-        this.generateNewCells();
 
-        this.animation.animateField(this.speed, moveArrs, fieldCopy, this.fieldData);
+        let newCellsAnimArr = this.generateNewCells();
+        for (let index = 0; index < moveArrs.length; index++) {
+            moveArrs[index].push(...newCellsAnimArr[index]);
+
+        }
+
+        this.animation.animateField(this.speed, moveArrs, this.fieldData);
     }
 
-    private packColumn(colIndex: number, fieldCopy: Node[]): Vec2[] {
+    private packColumn(colIndex: number, fieldCopy: Node[]): AnimationData[] {
         let colIndecies = this.fieldData.getColumn(colIndex);
         let empty = undefined;
-        let moveArr: Vec2[] = [];
+        let moveArr: AnimationData[] = [];
 
         for (const itemIndex of colIndecies) {
             const element = fieldCopy[itemIndex];
@@ -146,8 +150,11 @@ export class FieldController extends Component {
             }
 
             if (empty !== undefined && element) {
-
-                moveArr.push(new Vec2(itemIndex, empty));
+                let animData = new AnimationData();
+                animData.target = fieldCopy[itemIndex];
+                animData.from = itemIndex;
+                animData.to = empty;
+                moveArr.push(animData);
                 fieldCopy[empty] = fieldCopy[itemIndex];
                 fieldCopy[itemIndex] = null;
                 empty = empty + this.fieldData.col;
