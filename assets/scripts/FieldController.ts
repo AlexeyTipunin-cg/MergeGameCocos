@@ -6,16 +6,16 @@ import { Field } from './Field';
 import { FieldAnimations } from './FieldAnimations';
 import { FieldInput } from './FieldInput';
 import { GameEvents } from './GameEvents';
-import { SimpleStrategy } from './SimpleStrategy';
+import { SimpleCellStrategy } from './SimpleStrategy';
 const { ccclass, property } = _decorator;
 
 @ccclass('FieldController')
 export class FieldController extends Component {
 
-    @property({ type: Number })
+    @property({ type: CCInteger })
     private sizeX: number = 9;
 
-    @property({ type: Number })
+    @property({ type: CCInteger })
     private sizeY: number = 9;
 
     @property({ type: CellPrefabsFactory })
@@ -68,13 +68,12 @@ export class FieldController extends Component {
             return;
         }
 
-        let strategy = new SimpleStrategy();
+        let strategy = new SimpleCellStrategy();
 
         let killedCells = strategy.calculateKilledCells(this.fieldData, pos);
         if (killedCells.length > 0) {
             this.blockInput = true;
             let opacityComponent = killedCells.map((value) => this.fieldData.cells[value].getComponent(UIOpacity));
-
 
             let alpha = new Vec2(255);
             tween(alpha).to(0.2, { x: 0 }, {

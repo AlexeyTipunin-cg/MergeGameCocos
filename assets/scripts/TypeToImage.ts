@@ -5,7 +5,7 @@ const { ccclass, property } = _decorator;
 @ccclass
 export class TypeToImage {
     @property({ type: CellTypes })
-    public cellType: CellTypes;
+    public cellType: CellTypes = null;
     @property({ type: SpriteFrame })
-    public sprite: SpriteFrame;
+    public sprite: SpriteFrame = null;
 }

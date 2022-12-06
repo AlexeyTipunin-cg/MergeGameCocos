@@ -2,7 +2,7 @@ import { Vec3 } from "cc";
 import { Cell } from "./Cell";
 import { Field } from "./Field";
 
-export class SimpleStrategy {
+export class SimpleCellStrategy {
 
     public calculateKilledCells(field: Field, pos: Vec3) {
         let clickedCell = field.screenPosToIndex(pos);
@@ -17,7 +17,7 @@ export class SimpleStrategy {
 
             let curIndex = indexArray.pop();
             if (visited[curIndex]) continue;
-            if(field.cells[curIndex] === null) continue;
+            if (field.cells[curIndex] === null) continue;
             if (field.cells[curIndex].getComponent(Cell).cellData.type !== field.cells[clickedCell].getComponent(Cell).cellData.type) continue;
 
             res.push(curIndex);
@@ -27,8 +27,8 @@ export class SimpleStrategy {
             indexArray = indexArray.concat(nn);
         }
 
-        if (res.length >1) {
-            return res;   
+        if (res.length > 1) {
+            return res;
         }
 
         return [];

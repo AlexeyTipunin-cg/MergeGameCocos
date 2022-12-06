@@ -13,13 +13,15 @@ export class FieldAnimations {
         for (const column of animDatas) {
             if (column.length > 0) {
                 let animation = new ColumnAnimation();
-                animation.animateNewCells(speed, column, fieldData);
+                animation.animateColumDrop(speed, column, fieldData);
                 this.animations.push(animation);
             }
         }
     }
 
     public isCompleted(): boolean {
-        return this.animations.length == 0 || this.animations.every((anim) => anim.isDone);
+        return this.animations.length == 0 ||
+            this.animations.every(
+                (anim) => anim.isDone());
     }
 }

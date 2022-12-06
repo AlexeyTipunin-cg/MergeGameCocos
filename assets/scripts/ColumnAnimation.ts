@@ -5,33 +5,24 @@ import { Field } from "./Field";
 export class ColumnAnimation {
 
     private tweens = []
-    public animateRow(speed: number, moveArr: Vec2[], oldField: Node[], fieldData: Field) {
+    private readonly TWEEN_TAG = 100;
 
-        this.tweens = []
-        for (const vec of moveArr) {
-            let cell = oldField[vec.x];
-            let newPos = fieldData.indexToFieldPos(vec.y);
-            let time = (vec.x - vec.y) * fieldData.cellHeight / speed;
-            let t = tween(cell).tag(100).to(time, { position: newPos }).start();
-            this.tweens.push(TweenSystem.instance.ActionManager.getActionByTag(100, cell))
-        }
-    }
-
-    public animateNewCells(speed: number, animDatas: AnimationData[], fieldData: Field) {
+    public animateColumDrop(speed: number, animDatas: AnimationData[], fieldData: Field): void {
 
         this.tweens = []
         for (let index = 0; index < animDatas.length; index++) {
             const vec = animDatas[index];
             let newPos = fieldData.indexToFieldPos(vec.to);
             let time = (vec.from - vec.to) * fieldData.cellHeight / speed;
-            let t = tween(vec.target).tag(100).to(time, { position: newPos }).start();
+            let t = tween(vec.target).tag(this.TWEEN_TAG).to(time, { position: newPos }).start();
+            this.tweens.push(TweenSystem.instance.ActionManager.getActionByTag(this.TWEEN_TAG, vec.target))
         }
     }
 
     public isDone(): boolean {
         let completed: boolean = true
         for (const tween of this.tweens) {
-            if (!tween.isDone) {
+            if (!tween.isDone()) {
                 completed = false;
                 break;
             }
