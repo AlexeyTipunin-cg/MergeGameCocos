@@ -28,10 +28,9 @@ export class Field {
         return new Vec2(x, y);
     }
 
-    public getColumn(columnIndex:number)
-    {
+    public getColumn(columnIndex: number) {
         let arrCol = []
-        for (let index = columnIndex; index < this.cells.length; index+= this.col){
+        for (let index = columnIndex; index < this.cells.length; index += this.col) {
             arrCol.push(index);
         }
 
@@ -45,7 +44,7 @@ export class Field {
         this.cells[index] = null;
     }
 
-    public indexToFieldPos(index: number){
+    public indexToFieldPos(index: number) {
         let y = Math.floor(index / this.col);
         let x = Math.floor(index % this.col);
         return new Vec3(x * this.cellWidth, y * this.cellHeight);
@@ -56,8 +55,6 @@ export class Field {
     public screenPosToIndex(pos: Vec3) {
         let y = Math.floor(pos.y / this.cellHeight);
         let x = Math.floor(pos.x / this.cellWidth);
-        console.log("x---->" + x);
-        console.log("y---->" + y);
         let index = y * this.row + x;
         return index;
     }

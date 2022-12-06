@@ -1,13 +1,14 @@
 import { _decorator, Component, Node, random, Prefab, instantiate, UITransform, Vec3, tween, Sprite, Vec2, UIOpacity, CCInteger, CCFloat, Tween, TweenAction, TweenSystem } from 'cc';
 import { CellPrefabsFactory } from './CellPrefabsFactory';
+import { ColumnAnimation } from './ColumnAnimation';
 import { Field } from './Field';
 import { FieldInput } from './FieldInput';
 import { GameEvents } from './GameEvents';
 import { SimpleStrategy } from './SimpleStrategy';
 const { ccclass, property } = _decorator;
 
-@ccclass('Test')
-export class Test extends Component {
+@ccclass('FieldController')
+export class FieldController extends Component {
 
     @property({ type: Number })
     private sizeX: number = 9;
@@ -25,13 +26,12 @@ export class Test extends Component {
     private input: FieldInput = null;
 
     private fieldData: Field = null;
-
     private blockInput: boolean = false;
 
     @property(CCFloat)
-    private speed = 10;
+    private speed = 10000;
 
-    start() {
+    public startGame(): void {
         this.createField();
         this.input.onFieldTouch.on(GameEvents.onTouchField, this.onTouchScreen, this);
     }
@@ -91,35 +91,6 @@ export class Test extends Component {
         for (let index = 0; index < this.fieldData.col; index++) {
             this.packColumn(index);
         }
-
-
-
-
-        // tween(this.node).parallel(...t).call(() => {
-        //     this.blockInput = false;
-        //     console.log("ANIMATIONS STOPED")
-        // }).start();
-        // for (let index = 0; index < this.fieldData.cells.length; index++) {
-        //     const element = this.fieldData.cells[index];
-        //     if (element == null) {
-        //         let gridPos = this.fieldData.indexToXY(index);
-        //         let cell = this.createCell(gridPos.x, gridPos.y);
-        //         this.fieldData.cells[index] = cell;
-        //     }
-
-        // }
-    }
-
-    private generateNewCellsInCol(colIndex: number) {
-        let colItems = this.fieldData.getColumn(colIndex);
-        for (const itemIndex of colItems) {
-            const element = this.fieldData.cells[itemIndex];
-            if (element == null) {
-                let gridPos = this.fieldData.indexToXY(itemIndex);
-                let cell = this.createCell(gridPos.x, gridPos.y);
-                this.fieldData.cells[itemIndex] = cell;
-            }
-        }
     }
 
     private packColumn(colIndex: number) {
@@ -149,7 +120,8 @@ export class Test extends Component {
                 this.fieldData.cells = newField;
             }
 
-            this.animateRow(moveArr, oldField);
+            let animation = new ColumnAnimation();
+            animation.animateRow(this.speed, moveArr, oldField, this.fieldData);
         }
 
     }
@@ -162,11 +134,6 @@ export class Test extends Component {
             let cell = field[vec.x];
             let newPos = this.fieldData.indexToFieldPos(vec.y);
             let time = (vec.x - vec.y) * this.fieldData.cellHeight / this.speed;
-            if (cell.position.y === newPos.y) {
-                console.log("dfdf");
-                let i = time + 5;
-            }
-            console.log(`${cell.position} -------> ${newPos}`);
             let t = tween(cell).to(time, { position: newPos }).start();
             this.blockInput = false;
         }
@@ -179,31 +146,6 @@ export class Test extends Component {
             cellToDestroy.destroy();
         }
     }
-
-}
-
-class AnimatioData {
-    public from: Vec2[];
-    public to: Vec2[];
-    public nodes: Node[];
-
-
-    public Animate() {
-        let delta = this.from[0].subtract(this.to[0]);
-        tween(new Vec2()).to(1, { x: 1 }, {
-            onUpdate: (value) => {
-                for (let index = 0; index < this.nodes.length; index++) {
-                    const element = this.nodes[index];
-                    let to = this.to[index];
-                    let from = this.from[index];
-                    let newPos = to.subtract(delta.multiplyScalar((value as Vec2).x))
-
-                    element.setPosition(new Vec3(newPos.x, newPos.y, 0));
-                }
-            }
-        })
-    }
-
 
 }
 
