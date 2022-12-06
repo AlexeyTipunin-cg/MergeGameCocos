@@ -2,6 +2,7 @@ import { _decorator, Component, Node, random, Prefab, instantiate, UITransform, 
 import { CellPrefabsFactory } from './CellPrefabsFactory';
 import { ColumnAnimation } from './ColumnAnimation';
 import { Field } from './Field';
+import { FieldAnimations } from './FieldAnimations';
 import { FieldInput } from './FieldInput';
 import { GameEvents } from './GameEvents';
 import { SimpleStrategy } from './SimpleStrategy';
@@ -31,9 +32,12 @@ export class FieldController extends Component {
     @property(CCFloat)
     private speed = 10000;
 
+    private animation: FieldAnimations;
+
     public startGame(): void {
         this.createField();
         this.input.onFieldTouch.on(GameEvents.onTouchField, this.onTouchScreen, this);
+        this.animation = new FieldAnimations();
     }
 
     private createField(): void {
@@ -59,8 +63,8 @@ export class FieldController extends Component {
 
     private onTouchScreen(pos: Vec3) {
 
-        if (this.blockInput) {
-            return;
+        if (!this.animation.isCompleted || this.blockInput) {
+            return
         }
 
         let strategy = new SimpleStrategy();
@@ -79,7 +83,9 @@ export class FieldController extends Component {
                     }
                 }, onComplete: () => {
                     killedCells.forEach((value) => this.destroyCell(value));
+                    this.getNewField();
                     this.generateNewCells();
+                    this.blockInput = false;
                 }
             }).start();
         }
@@ -87,21 +93,29 @@ export class FieldController extends Component {
 
     private generateNewCells() {
 
-        let t: Tween<Node>[] = [];
-        for (let index = 0; index < this.fieldData.col; index++) {
-            this.packColumn(index);
-        }
+
     }
 
-    private packColumn(colIndex: number) {
+    private getNewField() {
+        let fieldCopy = Object.assign([], this.fieldData.cells);
+        let changedField = Object.assign([], this.fieldData.cells);
+        let moveArrs = new Array(this.fieldData.col);
+        for (let index = 0; index < this.fieldData.col; index++) {
+            moveArrs[index] = this.packColumn(index, changedField);
+        }
+
+        this.fieldData.cells = changedField;
+
+        this.animation.animateField(this.speed, moveArrs, fieldCopy, this.fieldData);
+    }
+
+    private packColumn(colIndex: number, fieldCopy: Node[]): Vec2[] {
         let colIndecies = this.fieldData.getColumn(colIndex);
         let empty = undefined;
         let moveArr: Vec2[] = [];
-        let oldField = Object.assign([], this.fieldData.cells);
-        let newField = Object.assign([], this.fieldData.cells);
 
         for (const itemIndex of colIndecies) {
-            const element = newField[itemIndex];
+            const element = fieldCopy[itemIndex];
             if (empty === undefined && !element) {
                 empty = itemIndex;
             }
@@ -109,34 +123,13 @@ export class FieldController extends Component {
             if (empty !== undefined && element) {
 
                 moveArr.push(new Vec2(itemIndex, empty));
-                newField[empty] = newField[itemIndex];
-                newField[itemIndex] = null;
+                fieldCopy[empty] = fieldCopy[itemIndex];
+                fieldCopy[itemIndex] = null;
                 empty = empty + this.fieldData.col;
             }
         }
 
-        if (moveArr.length > 0) {
-            for (const pos of moveArr) {
-                this.fieldData.cells = newField;
-            }
-
-            let animation = new ColumnAnimation();
-            animation.animateRow(this.speed, moveArr, oldField, this.fieldData);
-        }
-
-    }
-
-    private animateRow(moveArr: Vec2[], field: Node[]) {
-        let tweens = [];
-
-        for (let elementIndex = 0; elementIndex < moveArr.length; elementIndex++) {
-            let vec = moveArr[elementIndex];
-            let cell = field[vec.x];
-            let newPos = this.fieldData.indexToFieldPos(vec.y);
-            let time = (vec.x - vec.y) * this.fieldData.cellHeight / this.speed;
-            let t = tween(cell).to(time, { position: newPos }).start();
-            this.blockInput = false;
-        }
+        return moveArr;
     }
 
     private destroyCell(index: number) {
