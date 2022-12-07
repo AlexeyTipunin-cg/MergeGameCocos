@@ -1,6 +1,6 @@
 import { _decorator, Component, Node, Label } from 'cc';
-import { GameEvents } from './GameEvents';
-import { ScoreController } from './ScoreController';
+import { GameEvents } from '../GameEvents';
+import { ScoreController } from '../ScoreController';
 const { ccclass, property } = _decorator;
 
 @ccclass('ScoreView')
