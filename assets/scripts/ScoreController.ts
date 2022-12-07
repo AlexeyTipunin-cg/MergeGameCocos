@@ -14,4 +14,8 @@ export class ScoreController {
         this.playerScore += value;
         this.onScoreUpdate.emit(GameEvents.onScoreUpdate, this.playerScore);
     }
+
+    public reset() {
+        this.playerScore = 0;
+    }
 }

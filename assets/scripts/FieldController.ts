@@ -1,8 +1,7 @@
-import { _decorator, Component, Node, EventTarget, UITransform, Vec3, tween,  Vec2, UIOpacity, CCInteger, CCFloat } from 'cc';
+import { _decorator, Component, Node, EventTarget, UITransform, Vec3, tween,  Vec2, UIOpacity, CCInteger, CCFloat, dynamicAtlasManager } from 'cc';
 import { AnimationData } from './AnimationData';
 import { Cell, CellData } from './Cell';
 import { CellPrefabsFactory } from './CellPrefabsFactory';
-import { ColumnAnimation } from './ColumnAnimation';
 import { Field } from './Field';
 import { FieldAnimations } from './FieldAnimations';
 import { FieldInput } from './FieldInput';
@@ -39,10 +38,23 @@ export class FieldController extends Component {
     private cellDataToView = new Map<CellData, Cell>();
     public onCellsDestoy = new EventTarget();
 
-    public startGame(): void {
-        this.createField();
+    start(){
         this.input.onFieldTouch.on(GameEvents.onTouchField, this.onTouchScreen, this);
+    }
+
+    public startGame(): void {
+        dynamicAtlasManager.enabled = false;
+        this.createField();
         this.animation = new FieldAnimations();
+        this.blockInput = false;
+    }
+
+    public resetGame(): void{
+        for (const cellComponent of this.cellDataToView.values()) {
+            cellComponent.node.destroy();
+        }
+
+        this.cellDataToView.clear();
     }
 
     private createField(): void {

@@ -31,11 +31,11 @@ export class CellPrefabsFactory extends Component {
     }
 
     public getCellWidth(): number {
-        return this.cellSprites[0].width;
+        return this.cellSprites[0].texture.width;
     }
 
     public getCellHeight(): number {
-        return this.cellSprites[0].height;
+        return this.cellSprites[0].texture.height;
     }
 }
 

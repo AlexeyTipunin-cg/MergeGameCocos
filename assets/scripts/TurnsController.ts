@@ -4,11 +4,10 @@ import { GameEvents } from './GameEvents';
 export class TurnsController {
 
     public onTurnUpdate: EventTarget = new EventTarget();
-    public onGameOver: EventTarget = new EventTarget();
 
     private playerTurns: number = 0;
 
-    public get score(): number {
+    public get turns(): number {
         return this.playerTurns;
     }
 
@@ -24,9 +23,5 @@ export class TurnsController {
 
         this.playerTurns--;
         this.onTurnUpdate.emit(GameEvents.onTurnUpdate, this.playerTurns);
-
-        if (this.playerTurns == 0) {
-            this.onGameOver.emit(GameEvents.onGameFailed);
-        }
     }
 }

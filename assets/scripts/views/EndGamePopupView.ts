@@ -1,4 +1,7 @@
-import { _decorator, Component, Node, Button, Label } from 'cc';
+import { _decorator, Component, Node, Button, Label, MeshCollider } from 'cc';
+import { GameEvents } from '../GameEvents';
+import { GameMediator } from '../GameMediator';
+import { GameStates } from '../GameStates';
 const { ccclass, property } = _decorator;
 
 @ccclass('EndGamePopupView')
@@ -8,12 +11,40 @@ export class EndGamePopupView extends Component {
     private resrartButton: Button = null;
     @property(Label)
     private text: Label = null;
+    private mediator: GameMediator = null;
 
-    private setText(isWin:boolean){
-        if (isWin) {
-            this.text.string = "You win!"
-        }else{
-            this.text.string = "Failed! Try again."
+    start() {
+        this.resrartButton.node.on(Button.EventType.CLICK, this.resetGame, this);
+    }
+
+    onDestroy() {
+        this.resrartButton.node.off(Button.EventType.CLICK, this.resetGame, this);
+    }
+
+    onEnable() {
+        this.setText(this.mediator.gameState)
+    }
+
+
+    public init(mediator: GameMediator): void {
+        this.mediator = mediator;
+        this.mediator.onGameOver.on(GameEvents.onGameOver, this.setText, this)
+    }
+
+    private resetGame(): void {
+        this.mediator.reset();
+    }
+
+    private setText(gameState: GameStates) {
+        switch (gameState) {
+            case GameStates.LOOSE:
+                this.text.string = "Failed! Try again."
+                break;
+            case GameStates.WIN:
+                this.text.string = "You win!"
+                break;
+            default:
+                break;
         }
     }
 }
