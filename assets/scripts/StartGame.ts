@@ -2,9 +2,9 @@ import { _decorator, Component, Node } from 'cc';
 import { FieldController } from './FieldController';
 import { GameEvents } from './GameEvents';
 import { ScoreController } from './ScoreController';
-import { ScoreView } from './ScoreView';
+import { ScoreView } from './views/ScoreView';
 import { TurnsController } from './TurnsController';
-import { TurnsCounterView } from './TurnsCounterView';
+import { TurnsCounterView } from './views/TurnsCounterView';
 const { ccclass, property } = _decorator;
 
 @ccclass('StartGame')
