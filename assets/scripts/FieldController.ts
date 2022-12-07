@@ -43,7 +43,6 @@ export class FieldController extends Component {
     }
 
     public startGame(): void {
-        dynamicAtlasManager.enabled = false;
         this.createField();
         this.animation = new FieldAnimations();
         this.blockInput = false;
