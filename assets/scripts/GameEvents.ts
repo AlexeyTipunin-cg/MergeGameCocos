@@ -1,5 +1,7 @@
 export enum GameEvents {
     onTouchField,
     onCellsDestoy,
-    onScoreUpdate
+    onScoreUpdate,
+    onTurnUpdate,
+    onGameFailed
 }
