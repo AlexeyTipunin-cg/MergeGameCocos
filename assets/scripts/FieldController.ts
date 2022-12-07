@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, random, Prefab, instantiate, UITransform, Vec3, tween, Sprite, Vec2, UIOpacity, CCInteger, CCFloat, Tween, TweenAction, TweenSystem } from 'cc';
+import { _decorator, Component, Node, EventTarget, UITransform, Vec3, tween,  Vec2, UIOpacity, CCInteger, CCFloat } from 'cc';
 import { AnimationData } from './AnimationData';
 import { Cell, CellData } from './Cell';
 import { CellPrefabsFactory } from './CellPrefabsFactory';
@@ -37,6 +37,7 @@ export class FieldController extends Component {
     private animation: FieldAnimations;
 
     private cellDataToView = new Map<CellData, Cell>();
+    public onCellsDestoy = new EventTarget();
 
     public startGame(): void {
         this.createField();
@@ -89,6 +90,7 @@ export class FieldController extends Component {
                 }
             }).call(() => {
                 killedCells.forEach((value) => this.destroyCell(value));
+                this.onCellsDestoy.emit(GameEvents.onCellsDestoy, killedCells.length)
                 this.getNewField();
                 this.blockInput = false;
             }).start();
