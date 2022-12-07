@@ -4,7 +4,7 @@ import { Field } from "./Field";
 
 export class SimpleCellStrategy {
 
-    public calculateKilledCells(field: Field, pos: Vec3) {
+    public calculateKilledCells(field: Field, pos: Vec3): number[] {
         let clickedCell = field.screenPosToIndex(pos);
 
         let visited = new Array(field.cells.length);
@@ -18,7 +18,7 @@ export class SimpleCellStrategy {
             let curIndex = indexArray.pop();
             if (visited[curIndex]) continue;
             if (field.cells[curIndex] === null) continue;
-            if (field.cells[curIndex].getComponent(Cell).cellData.type !== field.cells[clickedCell].getComponent(Cell).cellData.type) continue;
+            if (field.cells[curIndex].type !== field.cells[clickedCell].type) continue;
 
             res.push(curIndex);
 

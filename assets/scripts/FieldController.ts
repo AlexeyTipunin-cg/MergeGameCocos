@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, random, Prefab, instantiate, UITransform, Vec3, tween, Sprite, Vec2, UIOpacity, CCInteger, CCFloat, Tween, TweenAction, TweenSystem } from 'cc';
 import { AnimationData } from './AnimationData';
+import { Cell, CellData } from './Cell';
 import { CellPrefabsFactory } from './CellPrefabsFactory';
 import { ColumnAnimation } from './ColumnAnimation';
 import { Field } from './Field';
@@ -35,6 +36,8 @@ export class FieldController extends Component {
 
     private animation: FieldAnimations;
 
+    private cellDataToView = new Map<CellData, Cell>();
+
     public startGame(): void {
         this.createField();
         this.input.onFieldTouch.on(GameEvents.onTouchField, this.onTouchScreen, this);
@@ -49,17 +52,18 @@ export class FieldController extends Component {
         for (let y = 0; y < this.sizeY; y++) {
             for (let x = 0; x < this.sizeX; x++) {
                 let cell = this.createCell(x, y);
-                this.fieldData.cells.push(cell);
+                this.fieldData.cells.push(cell.cellData);
             }
         }
     }
 
-    private createCell(x: number, y: number): Node {
-        let node = this.cellsFactory.createCell();
-        node.parent = this.fieldParent;
-        let s: UITransform = node.getComponent(UITransform);
-        node.setPosition(s.width * x, s.height * y);
-        return node;
+    private createCell(x: number, y: number): Cell {
+        let cellComponent = this.cellsFactory.createCell();
+        cellComponent.node.parent = this.fieldParent;
+        let s: UITransform = cellComponent.getComponent(UITransform);
+        cellComponent.node.setPosition(s.width * x, s.height * y);
+        this.cellDataToView.set(cellComponent.cellData, cellComponent);
+        return cellComponent;
     }
 
     private onTouchScreen(pos: Vec3) {
@@ -73,7 +77,8 @@ export class FieldController extends Component {
         let killedCells = strategy.calculateKilledCells(this.fieldData, pos);
         if (killedCells.length > 0) {
             this.blockInput = true;
-            let opacityComponent = killedCells.map((value) => this.fieldData.cells[value].getComponent(UIOpacity));
+            let killedCellsData = killedCells.map((cellIndex) => this.fieldData.cells[cellIndex]);
+            let opacityComponent = killedCellsData.map((value) => this.cellDataToView.get(value).getComponent(UIOpacity));
 
             let alpha = new Vec2(255);
             tween(alpha).to(0.2, { x: 0 }, {
@@ -105,11 +110,11 @@ export class FieldController extends Component {
                     let createPos = this.fieldData.row + newIndex;
                     let n = this.createCell(colIndex, createPos);
                     let animData = new AnimationData();
-                    animData.target = n;
+                    animData.target = n.node;
                     animData.from = this.fieldData.XYToindex(colIndex, createPos);
                     animData.to = index;
                     moveAnimaData[colIndex].push(animData);
-                    this.fieldData.cells[index] = n;
+                    this.fieldData.cells[index] = n.cellData;
                     newIndex++;
                 }
             }
@@ -137,7 +142,7 @@ export class FieldController extends Component {
         this.animation.animateField(this.speed, moveArrs, this.fieldData);
     }
 
-    private packColumn(colIndex: number, fieldCopy: Node[]): AnimationData[] {
+    private packColumn(colIndex: number, fieldCopy: CellData[]): AnimationData[] {
         let colIndecies = this.fieldData.getColumn(colIndex);
         let empty = undefined;
         let moveArr: AnimationData[] = [];
@@ -149,12 +154,13 @@ export class FieldController extends Component {
             }
 
             if (empty !== undefined && element) {
+                let cellData = fieldCopy[itemIndex];
                 let animData = new AnimationData();
-                animData.target = fieldCopy[itemIndex];
+                animData.target = this.cellDataToView.get(cellData).node;
                 animData.from = itemIndex;
                 animData.to = empty;
                 moveArr.push(animData);
-                fieldCopy[empty] = fieldCopy[itemIndex];
+                fieldCopy[empty] = cellData;
                 fieldCopy[itemIndex] = null;
                 empty = empty + this.fieldData.col;
             }
@@ -167,7 +173,9 @@ export class FieldController extends Component {
         if (this.fieldData.cells[index] != null) {
             let cellToDestroy = this.fieldData.cells[index];
             this.fieldData.cells[index] = null;
-            cellToDestroy.destroy();
+            let cellView = this.cellDataToView.get(cellToDestroy);
+            cellView.node.destroy();
+            this.cellDataToView.delete(cellToDestroy)
         }
     }
 

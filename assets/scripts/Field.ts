@@ -1,4 +1,5 @@
 import { _decorator, Node, Vec3, Vec2 } from 'cc';
+import { CellData } from './Cell';
 
 export class Field {
 
@@ -7,7 +8,7 @@ export class Field {
     public row: number;
     public col: number;
 
-    public cells: Node[] = [];
+    public cells: CellData[] = [];
 
     constructor(width, height, row, col) {
         this.cellWidth = width;
@@ -17,7 +18,7 @@ export class Field {
     }
 
 
-    public getCell(pos: Vec3): Node {
+    public getCell(pos: Vec3): CellData {
         let index = this.screenPosToIndex(pos);
         return this.cells[index];
     }

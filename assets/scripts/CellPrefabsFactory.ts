@@ -18,15 +18,16 @@ export class CellPrefabsFactory extends Component {
     private cell: Prefab | null = null;
 
 
-    public createCell(): Node {
+    public createCell(): Cell {
         let spiteNum = randomRangeInt(0, this.cellSprites.length);
         let cellInstance = instantiate(this.cell);
         let sprite = cellInstance.getComponent(Sprite);
+        let cellComponent = cellInstance.getComponent(Cell);
         let cellData = new CellData()
         cellData.type = this.cellTypes[spiteNum];
-        cellInstance.getComponent(Cell).cellData = cellData;
+        cellComponent.cellData = cellData;
         sprite.spriteFrame = this.cellSprites[spiteNum];
-        return cellInstance;
+        return cellComponent;
     }
 
     public getCellWidth(): number {
