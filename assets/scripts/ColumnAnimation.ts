@@ -7,14 +7,13 @@ export class ColumnAnimation {
     private tweens = []
     private readonly TWEEN_TAG = 100;
 
-    public animateColumDrop(speed: number, animDatas: AnimationData[], fieldData: Field): void {
+    public animateColumDrop(speed: number, animDatas: AnimationData[]): void {
 
         this.tweens = []
         for (let index = 0; index < animDatas.length; index++) {
             const vec = animDatas[index];
-            let newPos = fieldData.indexToFieldPos(vec.to);
-            let time = (vec.from - vec.to) * fieldData.cellHeight / speed;
-            let t = tween(vec.target).tag(this.TWEEN_TAG).to(time, { position: newPos }).start();
+            let time = (vec.from.y - vec.to.y) / speed;
+            let t = tween(vec.target).tag(this.TWEEN_TAG).to(time, { position: vec.to }).start();
             this.tweens.push(TweenSystem.instance.ActionManager.getActionByTag(this.TWEEN_TAG, vec.target))
         }
     }

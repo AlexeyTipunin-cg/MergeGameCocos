@@ -33,9 +33,19 @@ export class Field {
         return y * this.row + x;
     }
 
-    public getColumn(columnIndex: number) {
+    public getColumnIndices(columnIndex: number): number[] {
         let arrCol = []
         for (let index = columnIndex; index < this.cells.length; index += this.col) {
+            arrCol.push(index);
+        }
+
+        return arrCol
+    }
+
+
+    public static getColumn(columnIndex: number, length: number, colNum: number) {
+        let arrCol = []
+        for (let index = columnIndex; index < length; index += colNum) {
             arrCol.push(index);
         }
 

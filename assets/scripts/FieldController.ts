@@ -32,7 +32,7 @@ export class FieldController extends Component {
     private blockInput: boolean = false;
 
     @property(CCFloat)
-    private speed = 10000;
+    private speed = 1000;
 
     private animation: FieldAnimations;
 
@@ -95,57 +95,41 @@ export class FieldController extends Component {
         }
     }
 
-    private generateNewCells(): AnimationData[][] {
-        let moveAnimaData: AnimationData[][] = new Array(this.fieldData.col);
+    private generateNewCells(field: CellData[]): void {
         for (let colIndex = 0; colIndex < this.fieldData.col; colIndex++) {
-            let colIndecies = this.fieldData.getColumn(colIndex);
+            let colIndecies = this.fieldData.getColumnIndices(colIndex);
             let newIndex = 0;
 
-            moveAnimaData[colIndex] = [];
-
-
             for (const index of colIndecies) {
-                let cell = this.fieldData.cells[index];
+                let cell = field[index];
                 if (!cell) {
                     let createPos = this.fieldData.row + newIndex;
                     let n = this.createCell(colIndex, createPos);
-                    let animData = new AnimationData();
-                    animData.target = n.node;
-                    animData.from = this.fieldData.XYToindex(colIndex, createPos);
-                    animData.to = index;
-                    moveAnimaData[colIndex].push(animData);
-                    this.fieldData.cells[index] = n.cellData;
+                    field[index] = n.cellData;
                     newIndex++;
                 }
             }
         }
 
-        return moveAnimaData;
     }
 
     private getNewField() {
+        let oldField = Object.assign([], this.fieldData.cells);
         let changedField = Object.assign([], this.fieldData.cells);
-        let moveArrs: AnimationData[][] = new Array(this.fieldData.col);
         for (let index = 0; index < this.fieldData.col; index++) {
-            moveArrs[index] = this.packColumn(index, changedField);
+            this.packColumn(index, changedField);
         }
 
+        this.generateNewCells(changedField);
         this.fieldData.cells = changedField;
 
-
-        let newCellsAnimArr = this.generateNewCells();
-        for (let index = 0; index < moveArrs.length; index++) {
-            moveArrs[index].push(...newCellsAnimArr[index]);
-
-        }
-
-        this.animation.animateField(this.speed, moveArrs, this.fieldData);
+        let moveArrs = this.createFieldDif(oldField, changedField)
+        this.animation.animateField(this.speed, moveArrs);
     }
 
-    private packColumn(colIndex: number, fieldCopy: CellData[]): AnimationData[] {
-        let colIndecies = this.fieldData.getColumn(colIndex);
+    private packColumn(colIndex: number, fieldCopy: CellData[]): void {
+        let colIndecies = this.fieldData.getColumnIndices(colIndex);
         let empty = undefined;
-        let moveArr: AnimationData[] = [];
 
         for (const itemIndex of colIndecies) {
             const element = fieldCopy[itemIndex];
@@ -155,18 +139,39 @@ export class FieldController extends Component {
 
             if (empty !== undefined && element) {
                 let cellData = fieldCopy[itemIndex];
-                let animData = new AnimationData();
-                animData.target = this.cellDataToView.get(cellData).node;
-                animData.from = itemIndex;
-                animData.to = empty;
-                moveArr.push(animData);
                 fieldCopy[empty] = cellData;
                 fieldCopy[itemIndex] = null;
                 empty = empty + this.fieldData.col;
             }
         }
+    }
 
-        return moveArr;
+    private createFieldDif(oldField: CellData[], newField: CellData[]): AnimationData[][] {
+        let animationData: AnimationData[][] = new Array(this.fieldData.col);
+        for (let index = 0; index < this.fieldData.col; index++) {
+            let indices = this.fieldData.getColumnIndices(index);
+
+            let col = []
+            animationData[index] = col;
+
+            for (const cellIndex of indices) {
+                const element = newField[cellIndex];
+                const oElement = oldField[cellIndex];
+                if (element === oElement) {
+                    continue;
+                }
+
+                let targetNode = this.cellDataToView.get(element).node;
+
+                let animData: AnimationData = new AnimationData();
+                animData.target = targetNode;
+                animData.from = targetNode.position;
+                animData.to = this.fieldData.indexToFieldPos(cellIndex);
+                col.push(animData);
+            }
+        }
+
+        return animationData;
     }
 
     private destroyCell(index: number) {

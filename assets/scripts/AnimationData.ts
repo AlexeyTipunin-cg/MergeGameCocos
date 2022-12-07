@@ -1,7 +1,7 @@
-import { Node } from 'cc';
+import { Node, Vec3 } from 'cc';
 
 export class AnimationData {
     public target: Node;
-    public from: number;
-    public to: number
+    public from: Vec3;
+    public to: Vec3;
 }
