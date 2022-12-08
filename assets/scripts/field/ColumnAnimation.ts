@@ -1,6 +1,5 @@
-import { tween, Vec2, Node, TweenAction, Tween, TweenSystem, tweenUtil } from "cc";
-import { AnimationData } from "./AnimationData";
-import { Field } from "./Field";
+import { tween, TweenSystem } from "cc";
+import { AnimationData } from "../AnimationData";
 
 export class ColumnAnimation {
 

@@ -1,5 +1,5 @@
 import { _decorator, Node, Vec3, Vec2 } from "cc";
-import { CellData } from "./Cell";
+import { CellData } from "../Cell";
 
 export class Field {
   private cellWidth: number;
@@ -9,9 +9,9 @@ export class Field {
 
   public cells: CellData[] = [];
 
-  constructor(width, height, row, col) {
-    this.cellWidth = width;
-    this.cellHeight = height;
+  constructor(cellWidth: number, cellHeight: number, row: number, col: number) {
+    this.cellWidth = cellWidth;
+    this.cellHeight = cellHeight;
     this.row = row;
     this.col = col;
   }
@@ -41,20 +41,7 @@ export class Field {
 
   public getColumnIndices(columnIndex: number): number[] {
     let arrCol = [];
-    for (
-      let index = columnIndex;
-      index < this.cells.length;
-      index += this.col
-    ) {
-      arrCol.push(index);
-    }
-
-    return arrCol;
-  }
-
-  public static getColumn(columnIndex: number, length: number, colNum: number) {
-    let arrCol = [];
-    for (let index = columnIndex; index < length; index += colNum) {
+    for (let index = columnIndex; index < this.cells.length; index += this.col) {
       arrCol.push(index);
     }
 

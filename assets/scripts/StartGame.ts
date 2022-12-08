@@ -1,5 +1,5 @@
 import { _decorator, Component } from "cc";
-import { FieldController } from "./FieldController";
+import { FieldModel } from './field/FieldModel';
 import { GameEvents } from "./GameEvents";
 import { ScoreController } from "./ScoreController";
 import { ScoreView } from "./views/ScoreView";
@@ -8,6 +8,8 @@ import { TurnsCounterView } from "./views/TurnsCounterView";
 import { GameConfig } from "./GameConfig";
 import { EndGamePopupView } from "./views/EndGamePopupView";
 import { GameMediator } from "./GameMediator";
+import { FieldView } from './views/FieldView';
+import { FieldController } from "./field/FieldController";
 const { ccclass, property } = _decorator;
 
 @ccclass("StartGame")
@@ -15,48 +17,50 @@ export class StartGame extends Component {
   @property(GameConfig)
   private gameConfig: GameConfig = null;
 
-  @property(FieldController)
-  private fieldController: FieldController = null;
   @property(ScoreView)
   private scoreView: ScoreView = null;
   @property(TurnsCounterView)
   private turnsView: TurnsCounterView = null;
   @property(EndGamePopupView)
   private endGamePopupView: EndGamePopupView = null;
+  @property(FieldView)
+  private fieldView: FieldView;
 
+  private fieldController: FieldController = null;
   private readonly scoreController = new ScoreController();
   private readonly turnsController = new TurnsController();
   private gameMediator: GameMediator = null;
+  private fieldModel: FieldModel = null;
 
   start() {
-    this.gameMediator = new GameMediator(
-      this.scoreController,
-      this.turnsController,
-      this.gameConfig
-    );
+    this.fieldModel = new FieldModel();
+    this.fieldController = new FieldController(this.fieldModel, this.fieldView);
+    this.gameMediator = new GameMediator(this.scoreController, this.turnsController, this.gameConfig);
+
     this.gameMediator.onResetGame.on(
       GameEvents.onResetGame,
       this.onResetGame,
       this
     );
+
     this.gameMediator.onGameOver.on(
       GameEvents.onGameOver,
       this.onGameEnd,
       this
     );
 
-    this.fieldController.onCellsDestoy.on(
+    this.fieldController.onCellDestoyed.on(
       GameEvents.onCellsDestoy,
       this.onFieldClick,
       this
     );
+
     this.scoreView.init(this.scoreController);
     this.turnsView.init(this.turnsController);
-
     this.endGamePopupView.init(this.gameMediator);
 
     this.turnsController.setTurns(this.gameConfig.turnsCount);
-    this.fieldController.startGame(this.gameConfig);
+    this.fieldController.createField(this.gameConfig);
   }
 
   private onFieldClick(destroyedCount: number): void {
@@ -76,7 +80,7 @@ export class StartGame extends Component {
 
     this.turnsController.setTurns(this.gameConfig.turnsCount);
     this.scoreController.reset();
-    this.fieldController.resetGame();
-    this.fieldController.startGame(this.gameConfig);
+    this.fieldController.resetField();
+    this.fieldController.createField(this.gameConfig);
   }
 }

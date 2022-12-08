@@ -1,5 +1,5 @@
 import { _decorator, Component, Node, Input, EventTouch, EventTarget, UITransform, Vec3 } from 'cc';
-import { GameEvents } from './GameEvents';
+import { GameEvents } from '../GameEvents';
 const { ccclass, property } = _decorator;
 
 @ccclass('FieldInput')

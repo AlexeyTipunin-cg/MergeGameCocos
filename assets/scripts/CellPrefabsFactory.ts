@@ -11,22 +11,20 @@ export class CellPrefabsFactory extends Component {
     @property(SpriteFrame)
     private cellSprites: SpriteFrame[] = [];
 
-    @property({type: CellTypes})
+    @property({ type: CellTypes })
     private cellTypes: CellTypes[] = [];
 
     @property({ type: Prefab })
     private cell: Prefab | null = null;
 
 
-    public createCell(): Cell {
+    public createCell(cellData: CellData): Cell {
         let spiteNum = randomRangeInt(0, this.cellSprites.length);
         let cellInstance = instantiate(this.cell);
         let sprite = cellInstance.getComponent(Sprite);
         let cellComponent = cellInstance.getComponent(Cell);
-        let cellData = new CellData()
-        cellData.type = this.cellTypes[spiteNum];
         cellComponent.cellData = cellData;
-        sprite.spriteFrame = this.cellSprites[spiteNum];
+        sprite.spriteFrame = this.cellSprites[cellData.type];
         return cellComponent;
     }
 

@@ -1,24 +1,23 @@
 import { Vec3 } from "cc";
 import { Cell } from "./Cell";
-import { Field } from "./Field";
+import { Field } from "./field/Field";
 
 export class SimpleCellStrategy {
 
-    public calculateKilledCells(field: Field, pos: Vec3): number[] {
-        let clickedCell = field.screenPosToIndex(pos);
+    public calculateKilledCells(field: Field, clickedCellIndex: number): number[] {
 
         let visited = new Array(field.cells.length);
         visited.fill(false);
 
 
-        let indexArray: number[] = [clickedCell];
+        let indexArray: number[] = [clickedCellIndex];
         let res = []
         while (indexArray.length > 0) {
 
             let curIndex = indexArray.pop();
             if (visited[curIndex]) continue;
             if (field.cells[curIndex] === null) continue;
-            if (field.cells[curIndex].type !== field.cells[clickedCell].type) continue;
+            if (field.cells[curIndex].type !== field.cells[clickedCellIndex].type) continue;
 
             res.push(curIndex);
 

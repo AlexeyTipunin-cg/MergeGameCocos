@@ -3,75 +3,40 @@ import {
   Component,
   Node,
   EventTarget,
-  UITransform,
   Vec3,
-  tween,
-  Vec2,
-  UIOpacity,
-  CCInteger,
   CCFloat,
-  dynamicAtlasManager,
+  randomRangeInt,
 } from "cc";
-import { AnimationData } from "./AnimationData";
-import { Cell, CellData } from "./Cell";
-import { CellPrefabsFactory } from "./CellPrefabsFactory";
+import { AnimationData } from "../AnimationData";
+import { Cell, CellData } from '../Cell';
+import { CellPrefabsFactory } from "../CellPrefabsFactory";
 import { Field } from "./Field";
-import { FieldAnimations } from "./FieldAnimations";
 import { FieldInput } from "./FieldInput";
-import { GameEvents } from "./GameEvents";
-import { SimpleCellStrategy } from "./SimpleStrategy";
-import { GameConfig } from "./GameConfig";
+import { GameEvents } from "../GameEvents";
+import { SimpleCellStrategy } from "../SimpleStrategy";
+import { GameConfig } from "../GameConfig";
+import { CellTypes } from '../CellTypes';
 const { ccclass, property } = _decorator;
 
-@ccclass("FieldController")
-export class FieldController extends Component {
-  @property({ type: CellPrefabsFactory })
-  private cellsFactory: CellPrefabsFactory | null = null;
-
-  @property({ type: Node })
-  private fieldParent: Node = null;
-
-  @property({ type: FieldInput })
-  private input: FieldInput = null;
-
+@ccclass("FieldModel")
+export class FieldModel extends Component {
   private fieldData: Field = null;
-  private blockInput: boolean = false;
 
   @property(CCFloat)
   private speed = 1000;
-
-  private animation: FieldAnimations;
-
-  private cellDataToView = new Map<CellData, Cell>();
   public onCellsDestoy = new EventTarget();
+  public onCellsCreated = new EventTarget();
   public gameConfig: GameConfig = null;
 
-  start() {
-    this.input.onFieldTouch.on(
-      GameEvents.onTouchField,
-      this.onTouchScreen,
-      this
-    );
-  }
+  private simpleCellTypes: CellTypes[] = [CellTypes.BLUE, CellTypes.GREEN, CellTypes.PURPLE, CellTypes.RED, CellTypes.YELLOW];
 
   public startGame(config: GameConfig): void {
     this.gameConfig = config;
-    this.animation = new FieldAnimations();
-    this.blockInput = false;
     this.createField();
   }
 
-  public resetGame(): void {
-    for (const cellComponent of this.cellDataToView.values()) {
-      cellComponent.node.destroy();
-    }
 
-    this.cellDataToView.clear();
-  }
-
-  private createField(): void {
-    let cellWdith = this.cellsFactory.getCellWidth();
-    let cellHeight = this.cellsFactory.getCellHeight();
+  public createField(): void {
 
     this.fieldData = new Field(
       cellWdith,
@@ -83,59 +48,74 @@ export class FieldController extends Component {
     for (let y = 0; y < this.fieldData.sizeY; y++) {
       for (let x = 0; x < this.fieldData.sizeX; x++) {
         let cell = this.createCell(x, y);
-        this.fieldData.cells.push(cell.cellData);
+        this.fieldData.cells.push(cell);
       }
     }
+
+    this.onCellsCreated.emit(GameEvents.onCellsCreated, this.fieldData.cells);
   }
 
-  private createCell(x: number, y: number): Cell {
-    let cellComponent = this.cellsFactory.createCell();
-    cellComponent.node.parent = this.fieldParent;
-    let s: UITransform = cellComponent.getComponent(UITransform);
-    cellComponent.node.setPosition(s.width * x, s.height * y);
-    this.cellDataToView.set(cellComponent.cellData, cellComponent);
-    return cellComponent;
+  private createCell(x: number, y: number): CellData {
+    let cellTypeNum = randomRangeInt(0, this.simpleCellTypes.length);
+    let cellData = new CellData();
+    cellData.type = this.simpleCellTypes[cellTypeNum];
+    cellData.col = x;
+    cellData.row = y;
+    return cellData;
   }
 
-  private onTouchScreen(pos: Vec3) {
-    if (!this.animation.isCompleted() || this.blockInput) {
-      return;
-    }
-
+  public onTouch(pos: Vec3) {
     let strategy = new SimpleCellStrategy();
 
-    let killedCells = strategy.calculateKilledCells(this.fieldData, pos);
-    if (killedCells.length > 0) {
-      this.blockInput = true;
-      let killedCellsData = killedCells.map(
-        (cellIndex) => this.fieldData.cells[cellIndex]
-      );
-      let opacityComponent = killedCellsData.map((value) =>
-        this.cellDataToView.get(value).getComponent(UIOpacity)
-      );
+    let clickedCellIndex = this.fieldData.screenPosToIndex(pos);
 
-      let alpha = new Vec2(255);
-      tween(alpha)
-        .to(
-          0.2,
-          { x: 0 },
-          {
-            onUpdate: (target) => {
-              for (const opComponent of opacityComponent) {
-                opComponent.opacity = (target as Vec2).x;
-              }
-            },
-          }
-        )
-        .call(() => {
-          killedCells.forEach((value) => this.destroyCell(value));
-          this.onCellsDestoy.emit(GameEvents.onCellsDestoy, killedCells.length);
-          this.getNewField();
-          this.blockInput = false;
-        })
-        .start();
+    let killedCells = strategy.calculateKilledCells(this.fieldData, clickedCellIndex);
+
+    if (killedCells.length > 0) {
+      let killedCellsData = killedCells.map(
+        (cellIndex) => this.fieldData.cells[cellIndex]);
+
+      this.onCellsDestoy.emit(GameEvents.onCellsDestoy, killedCellsData);
     }
   }
+
+  // private onTouchScreen(pos: Vec3) {
+
+
+  //   let strategy = new SimpleCellStrategy();
+
+  //   let killedCells = strategy.calculateKilledCells(this.fieldData, pos);
+  //   if (killedCells.length > 0) {
+  //     this.blockInput = true;
+  //     let killedCellsData = killedCells.map(
+  //       (cellIndex) => this.fieldData.cells[cellIndex]
+  //     );
+  //     let opacityComponent = killedCellsData.map((value) =>
+  //       this.cellDataToView.get(value).getComponent(UIOpacity)
+  //     );
+
+  //     let alpha = new Vec2(255);
+  //     tween(alpha)
+  //       .to(
+  //         0.2,
+  //         { x: 0 },
+  //         {
+  //           onUpdate: (target) => {
+  //             for (const opComponent of opacityComponent) {
+  //               opComponent.opacity = (target as Vec2).x;
+  //             }
+  //           },
+  //         }
+  //       )
+  //       .call(() => {
+  //         killedCells.forEach((value) => this.destroyCell(value));
+  //         this.onCellsDestoy.emit(GameEvents.onCellsDestoy, killedCells.length);
+  //         this.getNewField();
+  //         this.blockInput = false;
+  //       })
+  //       .start();
+  //   }
+  // }
 
   private generateNewCells(field: CellData[]): void {
     for (let colIndex = 0; colIndex < this.fieldData.col; colIndex++) {
@@ -146,6 +126,8 @@ export class FieldController extends Component {
         let cell = field[index];
         if (!cell) {
           let createPos = this.fieldData.row + newIndex;
+          let cellData = new CellData();
+          cellData
           let n = this.createCell(colIndex, createPos);
           field[index] = n.cellData;
           newIndex++;
@@ -222,9 +204,6 @@ export class FieldController extends Component {
     if (this.fieldData.cells[index] != null) {
       let cellToDestroy = this.fieldData.cells[index];
       this.fieldData.cells[index] = null;
-      let cellView = this.cellDataToView.get(cellToDestroy);
-      cellView.node.destroy();
-      this.cellDataToView.delete(cellToDestroy);
     }
   }
 }
