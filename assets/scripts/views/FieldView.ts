@@ -34,6 +34,10 @@ export class FieldView extends Component {
 
   public onTouchField: EventTarget = new EventTarget();
 
+  start() {
+    this.input.onFieldTouch.on(GameEvents.onTouchField, this.onTouchFieldCallback, this);
+  }
+
   public resetGame(): void {
     for (const cellComponent of this.cellDataToView.values()) {
       cellComponent.node.destroy();
@@ -54,13 +58,11 @@ export class FieldView extends Component {
     return cellComponent;
   }
 
-  public destroyCells(cellsToDestroy: CellData[]){
-    for (const cellData of cellsToDestroy) {
-      this.destroyCell(cellData);
-    }
+  public destroyCells(cellsToDestroy: CellData[]) {
+    this.destroyAnimation(cellsToDestroy);
   }
 
-  public createCells(cellsToCreate: CellData[]){
+  public createCells(cellsToCreate: CellData[]) {
     for (const cellData of cellsToCreate) {
       this.createCell(cellData);
     }
@@ -117,18 +119,14 @@ export class FieldView extends Component {
     );
 
     let alpha = new Vec2(255);
-    tween(alpha)
-      .to(
-        0.2,
-        { x: 0 },
-        {
-          onUpdate: (target) => {
-            for (const opComponent of opacityComponent) {
-              opComponent.opacity = (target as Vec2).x;
-            }
-          },
+    tween(alpha).to(0.2, { x: 0 }, {
+      onUpdate: (target) => {
+        for (const opComponent of opacityComponent) {
+          opComponent.opacity = (target as Vec2).x;
         }
-      )
+      },
+    }
+    )
       .call(() => {
         killedCells.forEach((value) => this.destroyCell(value));
       })
