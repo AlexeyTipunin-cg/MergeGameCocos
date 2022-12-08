@@ -16,6 +16,7 @@ import { Field } from "../field/Field";
 import { FieldAnimations } from "../field/FieldAnimations";
 import { FieldInput } from "../field/FieldInput";
 import { GameEvents } from "../GameEvents";
+import { FieldChangeData } from '../field/FieldChangeData';
 const { ccclass, property } = _decorator;
 
 @ccclass("FieldView")
@@ -59,8 +60,8 @@ export class FieldView extends Component {
     return cellComponent;
   }
 
-  public destroyCells(killedCells: CellData[], createdCells: CellData[], oldField: Field, newField: Field) {
-    this.destroyAnimation(killedCells, createdCells, oldField, newField);
+  public destroyCells(fieldChangeData: FieldChangeData) {
+    this.destroyAnimation(fieldChangeData);
   }
 
   public createCells(cellsToCreate: CellData[]) {
@@ -111,8 +112,8 @@ export class FieldView extends Component {
     return animationData;
   }
 
-  private destroyAnimation(killedCells: CellData[], createdCells: CellData[], oldField: Field, newField: Field) {
-    let opacityComponent = killedCells.map((value) =>
+  private destroyAnimation(fieldChangeData: FieldChangeData) {
+    let opacityComponent = fieldChangeData.killedCells.map((value) =>
       this.cellDataToView.get(value).getComponent(UIOpacity)
     );
 
@@ -123,18 +124,15 @@ export class FieldView extends Component {
           opComponent.opacity = (target as Vec2).x;
         }
       },
-    }
-    )
-      .call(() => {
-        killedCells.forEach((value) => this.destroyCell(value));
-        this.updateField(createdCells, oldField, newField);
-      })
-      .start();
+    }).call(() => {
+      this.updateField(fieldChangeData);
+    }).start();
   }
 
-  private updateField(createdCells: CellData[], oldField: Field, newField: Field) {
-    this.createCells(createdCells);
-    let animDatas = this.createFieldDif(oldField, newField);
+  private updateField(fieldChangeData: FieldChangeData) {
+    fieldChangeData.killedCells.forEach((value) => this.destroyCell(value));
+    this.createCells(fieldChangeData.createdCells);
+    let animDatas = this.createFieldDif(fieldChangeData.oldField, fieldChangeData.newField);
     this.animation.animateField(1000, animDatas);
   }
 }

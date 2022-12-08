@@ -5,6 +5,7 @@ import { GameEvents } from "../GameEvents";
 import { SimpleCellStrategy } from "../SimpleStrategy";
 import { GameConfig } from "../GameConfig";
 import { CellTypes } from '../CellTypes';
+import { FieldChangeData } from './FieldChangeData';
 
 export class FieldModel extends Component {
   private fieldData: Field = null;
@@ -59,7 +60,36 @@ export class FieldModel extends Component {
       let killedCellsData = killedCells.map((cellIndex) => this.fieldData.cells[cellIndex]);
       killedCells.forEach(cellIndex => this.destroyCell(cellIndex))
 
-      this.getNewField(killedCellsData);
+      let oldCells = Object.assign([], this.fieldData.cells);
+      let fieldCopy = Object.assign([], this.fieldData.cells);
+      for (let index = 0; index < this.fieldData.col; index++) {
+        this.packColumn(index, fieldCopy);
+      }
+
+      let newCells = this.generateNewCells(fieldCopy);
+
+      // this.getNewField(killedCellsData);
+
+      let newField = new Field(
+        this.gameConfig.cellSize.x,
+        this.gameConfig.cellSize.y,
+        this.gameConfig.sizeX,
+        this.gameConfig.sizeY
+      );
+      newField.cells = fieldCopy;
+
+      let oldField = new Field(
+        this.gameConfig.cellSize.x,
+        this.gameConfig.cellSize.y,
+        this.gameConfig.sizeX,
+        this.gameConfig.sizeY
+      );
+      oldField.cells = oldCells;
+
+      this.fieldData.cells = fieldCopy;
+
+      let fieldChangeData: FieldChangeData = new FieldChangeData(killedCellsData, newCells, oldField, newField);
+      this.onCellsDestoy.emit(GameEvents.onCellsDestoy, fieldChangeData);
     }
   }
 
@@ -83,6 +113,7 @@ export class FieldModel extends Component {
 
     return newCells;
   }
+
 
   private getNewField(killedCells) {
     let oldCells = Object.assign([], this.fieldData.cells);
@@ -109,7 +140,6 @@ export class FieldModel extends Component {
       this.gameConfig.sizeY
     );
     oldField.cells = oldCells
-    this.onCellsDestoy.emit(GameEvents.onCellsDestoy, killedCells, newCells, oldField, newField);
   }
 
   private packColumn(colIndex: number, fieldCopy: CellData[]): void {
