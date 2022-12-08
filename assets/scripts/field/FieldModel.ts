@@ -1,25 +1,13 @@
-import {
-  _decorator,
-  Component,
-  EventTarget,
-  Vec3,
-  CCFloat,
-  randomRangeInt,
-} from "cc";
-import { Cell, CellData } from '../Cell';
+import { _decorator, Component, EventTarget, Vec3, randomRangeInt } from "cc";
+import { CellData } from '../Cell';
 import { Field } from "./Field";
 import { GameEvents } from "../GameEvents";
 import { SimpleCellStrategy } from "../SimpleStrategy";
 import { GameConfig } from "../GameConfig";
 import { CellTypes } from '../CellTypes';
-const { ccclass, property } = _decorator;
 
-@ccclass("FieldModel")
 export class FieldModel extends Component {
   private fieldData: Field = null;
-
-  @property(CCFloat)
-  private speed = 1000;
   public onCellsDestoy = new EventTarget();
   public onCellsCreated = new EventTarget();
   public gameConfig: GameConfig = null;
