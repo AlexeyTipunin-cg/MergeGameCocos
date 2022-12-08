@@ -1,21 +1,21 @@
-import { EventTarget } from 'cc';
-import { GameEvents } from './GameEvents';
+import { EventTarget } from "cc";
+import { GameEvents } from "./GameEvents";
 
 export class ScoreController {
+  public onScoreUpdate: EventTarget = new EventTarget();
+  private playerScore: number = 0;
 
-    public onScoreUpdate: EventTarget = new EventTarget();
-    private playerScore: number = 0;
+  public get score(): number {
+    return this.playerScore;
+  }
 
-    public get score(): number {
-        return this.playerScore;
-    }
+  public setScore(value: number) {
+    this.playerScore += value;
+    this.onScoreUpdate.emit(GameEvents.onScoreUpdate, this.playerScore);
+  }
 
-    public setScore(value: number) {
-        this.playerScore += value;
-        this.onScoreUpdate.emit(GameEvents.onScoreUpdate, this.playerScore);
-    }
-
-    public reset() {
-        this.playerScore = 0;
-    }
+  public reset() {
+    this.playerScore = 0;
+    this.onScoreUpdate.emit(GameEvents.onScoreUpdate, this.playerScore);
+  }
 }
