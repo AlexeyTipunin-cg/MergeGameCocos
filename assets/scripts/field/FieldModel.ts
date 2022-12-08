@@ -39,8 +39,8 @@ export class FieldModel extends Component {
   public createField(): void {
 
     this.fieldData = new Field(
-      cellWdith,
-      cellHeight,
+      this.gameConfig.cellSize.x,
+      this.gameConfig.cellSize.y,
       this.gameConfig.sizeX,
       this.gameConfig.sizeY
     );
