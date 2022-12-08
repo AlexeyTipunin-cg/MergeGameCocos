@@ -9,8 +9,8 @@ export class Cell extends Component {
 
 export class CellData {
     public type: CellTypes;
-    public col: number;
-    public row: number;
+    public virtualCol: number;
+    public virtualRow: number;
 }
 
 

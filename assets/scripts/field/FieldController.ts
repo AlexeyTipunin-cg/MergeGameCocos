@@ -4,6 +4,7 @@ import { GameEvents } from '../GameEvents';
 import { CellData } from '../Cell';
 import { Vec3, EventTarget } from 'cc';
 import { GameConfig } from '../GameConfig';
+import { Field } from './Field';
 
 export class FieldController {
 
@@ -32,9 +33,9 @@ export class FieldController {
         this.fieldModel.onTouch(pos);
     }
 
-    private onCellsDestroy(cells: CellData[]): void {
-        this.onCellDestoyed.emit(GameEvents.onCellsDestoy, cells.length);
-        this.fieldView.destroyCells(cells);
+    private onCellsDestroy(killedCells: CellData[], createdCells: CellData[], oldField: Field, newField: Field): void {
+        this.onCellDestoyed.emit(GameEvents.onCellsDestoy, killedCells.length);
+        this.fieldView.destroyCells(killedCells, createdCells, oldField, newField);
     }
 
     private createCells(cells: CellData[]): void {

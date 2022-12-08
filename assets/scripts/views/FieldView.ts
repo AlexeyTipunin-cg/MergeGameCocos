@@ -12,6 +12,7 @@ import {
 import { AnimationData } from "../AnimationData";
 import { Cell, CellData } from "../Cell";
 import { CellPrefabsFactory } from "../CellPrefabsFactory";
+import { Field } from "../field/Field";
 import { FieldAnimations } from "../field/FieldAnimations";
 import { FieldInput } from "../field/FieldInput";
 import { GameEvents } from "../GameEvents";
@@ -51,15 +52,15 @@ export class FieldView extends Component {
     cellComponent.node.parent = this.fieldParent;
     let s: UITransform = cellComponent.getComponent(UITransform);
     cellComponent.node.setPosition(
-      s.width * cellData.col,
-      s.height * cellData.row
+      s.width * cellData.virtualCol,
+      s.height * cellData.virtualRow
     );
     this.cellDataToView.set(cellComponent.cellData, cellComponent);
     return cellComponent;
   }
 
-  public destroyCells(cellsToDestroy: CellData[]) {
-    this.destroyAnimation(cellsToDestroy);
+  public destroyCells(killedCells: CellData[], createdCells: CellData[], oldField: Field, newField: Field) {
+    this.destroyAnimation(killedCells, createdCells, oldField, newField);
   }
 
   public createCells(cellsToCreate: CellData[]) {
@@ -82,38 +83,35 @@ export class FieldView extends Component {
     this.onTouchField.emit(GameEvents.onTouchField, pos);
   }
 
-  // private createFieldDif(
-  //   oldField: CellData[],
-  //   newField: CellData[]
-  // ): AnimationData[][] {
-  //   let animationData: AnimationData[][] = new Array(this.fieldData.col);
-  //   for (let index = 0; index < this.fieldData.col; index++) {
-  //     let indices = this.fieldData.getColumnIndices(index);
+  private createFieldDif(oldField: Field, newField: Field): AnimationData[][] {
+    let animationData: AnimationData[][] = new Array(oldField.col);
+    for (let index = 0; index < animationData.length; index++) {
+      let indices = oldField.getColumnIndices(index);
 
-  //     let col = [];
-  //     animationData[index] = col;
+      let col = [];
+      animationData[index] = col;
 
-  //     for (const cellIndex of indices) {
-  //       const element = newField[cellIndex];
-  //       const oElement = oldField[cellIndex];
-  //       if (element === oElement) {
-  //         continue;
-  //       }
+      for (const cellIndex of indices) {
+        const element = newField.cells[cellIndex];
+        const oElement = oldField.cells[cellIndex];
+        if (element === oElement) {
+          continue;
+        }
 
-  //       let targetNode = this.cellDataToView.get(element).node;
+        let targetNode = this.cellDataToView.get(element).node;
 
-  //       let animData: AnimationData = new AnimationData();
-  //       animData.target = targetNode;
-  //       animData.from = targetNode.position;
-  //       animData.to = this.fieldData.indexToFieldPos(cellIndex);
-  //       col.push(animData);
-  //     }
-  //   }
+        let animData: AnimationData = new AnimationData();
+        animData.target = targetNode;
+        animData.from = targetNode.position;
+        animData.to = oldField.indexToFieldPos(cellIndex);
+        col.push(animData);
+      }
+    }
 
-  //   return animationData;
-  // }
+    return animationData;
+  }
 
-  private destroyAnimation(killedCells: CellData[]) {
+  private destroyAnimation(killedCells: CellData[], createdCells: CellData[], oldField: Field, newField: Field) {
     let opacityComponent = killedCells.map((value) =>
       this.cellDataToView.get(value).getComponent(UIOpacity)
     );
@@ -129,7 +127,14 @@ export class FieldView extends Component {
     )
       .call(() => {
         killedCells.forEach((value) => this.destroyCell(value));
+        this.updateField(createdCells, oldField, newField);
       })
       .start();
+  }
+
+  private updateField(createdCells: CellData[], oldField: Field, newField: Field) {
+    this.createCells(createdCells);
+    let animDatas = this.createFieldDif(oldField, newField);
+    this.animation.animateField(1000, animDatas);
   }
 }

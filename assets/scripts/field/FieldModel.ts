@@ -1,17 +1,13 @@
 import {
   _decorator,
   Component,
-  Node,
   EventTarget,
   Vec3,
   CCFloat,
   randomRangeInt,
 } from "cc";
-import { AnimationData } from "../AnimationData";
 import { Cell, CellData } from '../Cell';
-import { CellPrefabsFactory } from "../CellPrefabsFactory";
 import { Field } from "./Field";
-import { FieldInput } from "./FieldInput";
 import { GameEvents } from "../GameEvents";
 import { SimpleCellStrategy } from "../SimpleStrategy";
 import { GameConfig } from "../GameConfig";
@@ -59,8 +55,8 @@ export class FieldModel extends Component {
     let cellTypeNum = randomRangeInt(0, this.simpleCellTypes.length);
     let cellData = new CellData();
     cellData.type = this.simpleCellTypes[cellTypeNum];
-    cellData.col = x;
-    cellData.row = y;
+    cellData.virtualCol = x;
+    cellData.virtualRow = y;
     return cellData;
   }
 
@@ -72,52 +68,15 @@ export class FieldModel extends Component {
     let killedCells = strategy.calculateKilledCells(this.fieldData, clickedCellIndex);
 
     if (killedCells.length > 0) {
-      let killedCellsData = killedCells.map(
-        (cellIndex) => this.fieldData.cells[cellIndex]);
+      let killedCellsData = killedCells.map((cellIndex) => this.fieldData.cells[cellIndex]);
+      killedCells.forEach(cellIndex => this.destroyCell(cellIndex))
 
-      this.onCellsDestoy.emit(GameEvents.onCellsDestoy, killedCellsData);
+      this.getNewField(killedCellsData);
     }
   }
 
-  // private onTouchScreen(pos: Vec3) {
-
-
-  //   let strategy = new SimpleCellStrategy();
-
-  //   let killedCells = strategy.calculateKilledCells(this.fieldData, pos);
-  //   if (killedCells.length > 0) {
-  //     this.blockInput = true;
-  //     let killedCellsData = killedCells.map(
-  //       (cellIndex) => this.fieldData.cells[cellIndex]
-  //     );
-  //     let opacityComponent = killedCellsData.map((value) =>
-  //       this.cellDataToView.get(value).getComponent(UIOpacity)
-  //     );
-
-  //     let alpha = new Vec2(255);
-  //     tween(alpha)
-  //       .to(
-  //         0.2,
-  //         { x: 0 },
-  //         {
-  //           onUpdate: (target) => {
-  //             for (const opComponent of opacityComponent) {
-  //               opComponent.opacity = (target as Vec2).x;
-  //             }
-  //           },
-  //         }
-  //       )
-  //       .call(() => {
-  //         killedCells.forEach((value) => this.destroyCell(value));
-  //         this.onCellsDestoy.emit(GameEvents.onCellsDestoy, killedCells.length);
-  //         this.getNewField();
-  //         this.blockInput = false;
-  //       })
-  //       .start();
-  //   }
-  // }
-
-  private generateNewCells(field: CellData[]): void {
+  private generateNewCells(field: CellData[]): CellData[] {
+    let newCells = [];
     for (let colIndex = 0; colIndex < this.fieldData.col; colIndex++) {
       let colIndecies = this.fieldData.getColumnIndices(colIndex);
       let newIndex = 0;
@@ -126,28 +85,43 @@ export class FieldModel extends Component {
         let cell = field[index];
         if (!cell) {
           let createPos = this.fieldData.row + newIndex;
-          let cellData = new CellData();
-          cellData
-          let n = this.createCell(colIndex, createPos);
-          field[index] = n.cellData;
+          let cellData = this.createCell(colIndex, createPos);
+          newCells.push(cellData);
+          field[index] = cellData;
           newIndex++;
         }
       }
     }
+
+    return newCells;
   }
 
-  private getNewField() {
-    let oldField = Object.assign([], this.fieldData.cells);
+  private getNewField(killedCells) {
+    let oldCells = Object.assign([], this.fieldData.cells);
     let changedField = Object.assign([], this.fieldData.cells);
     for (let index = 0; index < this.fieldData.col; index++) {
       this.packColumn(index, changedField);
     }
 
-    this.generateNewCells(changedField);
+    let newCells = this.generateNewCells(changedField);
     this.fieldData.cells = changedField;
 
-    let moveArrs = this.createFieldDif(oldField, changedField);
-    this.animation.animateField(this.speed, moveArrs);
+    let newField = new Field(
+      this.gameConfig.cellSize.x,
+      this.gameConfig.cellSize.y,
+      this.gameConfig.sizeX,
+      this.gameConfig.sizeY
+    );
+    newField.cells = changedField;
+
+    let oldField = new Field(
+      this.gameConfig.cellSize.x,
+      this.gameConfig.cellSize.y,
+      this.gameConfig.sizeX,
+      this.gameConfig.sizeY
+    );
+    oldField.cells = oldCells
+    this.onCellsDestoy.emit(GameEvents.onCellsDestoy, killedCells, newCells, oldField, newField);
   }
 
   private packColumn(colIndex: number, fieldCopy: CellData[]): void {
@@ -169,40 +143,8 @@ export class FieldModel extends Component {
     }
   }
 
-  private createFieldDif(
-    oldField: CellData[],
-    newField: CellData[]
-  ): AnimationData[][] {
-    let animationData: AnimationData[][] = new Array(this.fieldData.col);
-    for (let index = 0; index < this.fieldData.col; index++) {
-      let indices = this.fieldData.getColumnIndices(index);
-
-      let col = [];
-      animationData[index] = col;
-
-      for (const cellIndex of indices) {
-        const element = newField[cellIndex];
-        const oElement = oldField[cellIndex];
-        if (element === oElement) {
-          continue;
-        }
-
-        let targetNode = this.cellDataToView.get(element).node;
-
-        let animData: AnimationData = new AnimationData();
-        animData.target = targetNode;
-        animData.from = targetNode.position;
-        animData.to = this.fieldData.indexToFieldPos(cellIndex);
-        col.push(animData);
-      }
-    }
-
-    return animationData;
-  }
-
   private destroyCell(index: number) {
-    if (this.fieldData.cells[index] != null) {
-      let cellToDestroy = this.fieldData.cells[index];
+    if (this.fieldData.cells[index]) {
       this.fieldData.cells[index] = null;
     }
   }
