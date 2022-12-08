@@ -37,23 +37,9 @@ export class StartGame extends Component {
     this.fieldController = new FieldController(this.fieldModel, this.fieldView);
     this.gameMediator = new GameMediator(this.scoreController, this.turnsController, this.gameConfig);
 
-    this.gameMediator.onResetGame.on(
-      GameEvents.onResetGame,
-      this.onResetGame,
-      this
-    );
-
-    this.gameMediator.onGameOver.on(
-      GameEvents.onGameOver,
-      this.onGameEnd,
-      this
-    );
-
-    this.fieldController.onCellDestoyed.on(
-      GameEvents.onCellsDestoy,
-      this.onFieldClick,
-      this
-    );
+    this.gameMediator.onResetGame.on(GameEvents.onResetGame, this.onResetGame, this);
+    this.gameMediator.onGameOver.on(GameEvents.onGameOver, this.onGameEnd, this);
+    this.fieldController.onCellDestoyed.on(GameEvents.onCellsDestoy, this.onFieldClick, this);
 
     this.scoreView.init(this.scoreController);
     this.turnsView.init(this.turnsController);
