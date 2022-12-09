@@ -1,7 +1,5 @@
-import { tween, Vec2, Node, Component, animation } from "cc";
 import { AnimationData } from "../AnimationData";
 import { ColumnAnimation } from "./ColumnAnimation";
-import { Field } from "./Field";
 
 export class FieldAnimations {
 

@@ -17,8 +17,10 @@ import { FieldAnimations } from "../field/FieldAnimations";
 import { FieldInput } from "../field/FieldInput";
 import { GameEvents } from "../GameEvents";
 import { FieldChangeData } from '../field/FieldChangeData';
-import { Button } from 'cc';
+import { Button, animation } from 'cc';
 import { CellTypes } from '../CellTypes';
+import { DisappearAnimation } from '../DisappearAnimation';
+import { AnimationEvents } from '../AnimationEvents';
 const { ccclass, property } = _decorator;
 
 @ccclass("FieldView")
@@ -32,19 +34,20 @@ export class FieldView extends Component {
   @property({ type: FieldInput })
   private input: FieldInput = null;
 
-  @property({type: Button})
+  @property({ type: Button })
   private bombButton: Button
 
   private animation: FieldAnimations = new FieldAnimations();
+  private disappearAnimation: DisappearAnimation = new DisappearAnimation();
 
   private cellDataToView = new Map<CellData, Cell>();
 
   public onTouchField: EventTarget = new EventTarget();
-  public onBombButtonClick : EventTarget = new EventTarget();
+  public onBombButtonClick: EventTarget = new EventTarget();
 
   start() {
     this.input.onFieldTouch.on(GameEvents.onTouchField, this.onTouchFieldCallback, this);
-    this.bombButton.node.on(Button.EventType.CLICK, this.onBombButtonClickCb, this)
+    this.bombButton.node.on(Button.EventType.CLICK, this.onBombButtonClickCb, this);
   }
 
   public resetGame(): void {
@@ -83,12 +86,12 @@ export class FieldView extends Component {
     cellView.node.destroy();
   }
 
-  private onBombButtonClickCb(){
+  private onBombButtonClickCb() {
     this.onBombButtonClick.emit(GameEvents.onCellTypeMod, CellTypes.BOMB);
   }
 
   private onTouchFieldCallback(pos: Vec3) {
-    if (!this.animation.isCompleted()) {
+    if (!this.animation.isCompleted() && !this.disappearAnimation.isDone()) {
       return;
     }
 
@@ -128,16 +131,8 @@ export class FieldView extends Component {
       this.cellDataToView.get(value).getComponent(UIOpacity)
     );
 
-    let alpha = new Vec2(255);
-    tween(alpha).to(0.2, { x: 0 }, {
-      onUpdate: (target) => {
-        for (const opComponent of opacityComponent) {
-          opComponent.opacity = (target as Vec2).x;
-        }
-      },
-    }).call(() => {
-      this.updateField(fieldChangeData);
-    }).start();
+    this.disappearAnimation.onComplete.once(AnimationEvents.onComplete, () => this.updateField(fieldChangeData), this)
+    this.disappearAnimation.playAnimation(opacityComponent);
   }
 
   private updateField(fieldChangeData: FieldChangeData) {
