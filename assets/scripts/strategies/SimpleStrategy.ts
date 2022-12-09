@@ -1,39 +1,34 @@
-import { Vec3 } from "cc";
-import { Cell } from "./Cell";
-import { Field } from "./field/Field";
+import { Field } from "../field/Field";
+import { CellStrategy } from './CellStrategy';
 
-export class SimpleCellStrategy {
+export class SimpleCellStrategy implements CellStrategy {
 
-    public calculateKilledCells(field: Field, clickedCellIndex: number): number[] {
+    public getDestroyedCells(field: Field, targetCell: number): number[] {
 
         let visited = new Array(field.cells.length);
         visited.fill(false);
 
 
-        let indexArray: number[] = [clickedCellIndex];
+        let indexArray: number[] = [targetCell];
         let res = []
         while (indexArray.length > 0) {
 
             let curIndex = indexArray.pop();
             if (visited[curIndex]) continue;
             if (field.cells[curIndex] === null) continue;
-            if (field.cells[curIndex].type !== field.cells[clickedCellIndex].type) continue;
+            if (field.cells[curIndex].type !== field.cells[targetCell].type) continue;
 
             res.push(curIndex);
 
             visited[curIndex] = true;
-            let nn = this.findNeibours(field, curIndex);
+            let nn = this.findNeihbours(field, curIndex);
             indexArray = indexArray.concat(nn);
         }
 
-        if (res.length > 1) {
-            return res;
-        }
-
-        return [];
+        return res;
     }
 
-    private findNeibours(field: Field, index: number): number[] {
+    private findNeihbours(field: Field, index: number): number[] {
         let neigh = []
         let length = field.cells.length;
         let low = index - field.row;

@@ -1,6 +1,6 @@
 import { Enum } from "cc";
 
-export enum CellTypes {
+export enum CellColors {
     YELLOW,
     PURPLE,
     GREEN,
@@ -8,4 +8,10 @@ export enum CellTypes {
     BLUE
 }
 
-Enum(CellTypes)
+export enum CellTypes {
+    SIMPLE,
+    BOMB
+}
+
+
+Enum(CellColors)

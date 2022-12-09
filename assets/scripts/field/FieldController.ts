@@ -6,6 +6,7 @@ import { Vec3, EventTarget } from 'cc';
 import { GameConfig } from '../GameConfig';
 import { Field } from './Field';
 import { FieldChangeData } from './FieldChangeData';
+import { CellTypes } from '../CellTypes';
 
 export class FieldController {
 
@@ -14,12 +15,13 @@ export class FieldController {
 
     public onCellDestoyed: EventTarget = new EventTarget()
 
-    constructor(fieldModel: FieldModel, fieldView: FieldView) {
+    constructor(fieldModel: FieldModel, fieldView: FieldView, ) {
         this.fieldModel = fieldModel;
         this.fieldView = fieldView;
         this.fieldView.onTouchField.on(GameEvents.onTouchField, this.touchedField, this);
+        this.fieldView.onBombButtonClick.on(GameEvents.onCellTypeMod, this.onApplyModifier, this);
         this.fieldModel.onCellsDestoy.on(GameEvents.onCellsDestoy, this.onCellsDestroy, this);
-        this.fieldModel.onCellsCreated.on(GameEvents.onCellsCreated, this.createCells, this)
+        this.fieldModel.onCellsCreated.on(GameEvents.onCellsCreated, this.createCells, this);
     }
 
     public createField(gameConfig: GameConfig): void {
@@ -41,5 +43,9 @@ export class FieldController {
 
     private createCells(cells: CellData[]): void {
         this.fieldView.createCells(cells);
+    }
+
+    private onApplyModifier(cellType:CellTypes){
+        this.fieldModel.addModifier(cellType);
     }
 }

@@ -1,11 +1,13 @@
-import { _decorator, Component, EventTarget, Vec3, randomRangeInt } from "cc";
+import { _decorator, Component, EventTarget, Vec3, randomRangeInt, Enum } from 'cc';
 import { CellData } from '../Cell';
 import { Field } from "./Field";
-import { GameEvents } from "../GameEvents";
-import { SimpleCellStrategy } from "../SimpleStrategy";
+import { GameEvents } from '../GameEvents';
+import { SimpleCellStrategy } from '../strategies/SimpleStrategy';
 import { GameConfig } from "../GameConfig";
-import { CellTypes } from '../CellTypes';
+import { CellTypes, CellColors } from '../CellTypes';
 import { FieldChangeData } from './FieldChangeData';
+import { BombStrategy } from "../strategies/BombStrategy";
+import { CellStrategy } from '../strategies/CellStrategy';
 
 export class FieldModel extends Component {
   private fieldData: Field = null;
@@ -13,7 +15,17 @@ export class FieldModel extends Component {
   public onCellsCreated = new EventTarget();
   public gameConfig: GameConfig = null;
 
-  private simpleCellTypes: CellTypes[] = [CellTypes.BLUE, CellTypes.GREEN, CellTypes.PURPLE, CellTypes.RED, CellTypes.YELLOW];
+  private cellModificator: CellTypes = CellTypes.SIMPLE;
+  private cellColors : CellColors[]  = [CellColors.BLUE, CellColors.GREEN, CellColors.PURPLE, CellColors.RED, CellColors.YELLOW];
+
+  private chooseStrategy(cellType: CellTypes): CellStrategy {
+    switch (cellType) {
+      case CellTypes.SIMPLE:
+        return new SimpleCellStrategy();
+      case CellTypes.BOMB:
+        return new BombStrategy();
+    }
+  }
 
   public startGame(config: GameConfig): void {
     this.gameConfig = config;
@@ -41,20 +53,26 @@ export class FieldModel extends Component {
   }
 
   private createCell(x: number, y: number): CellData {
-    let cellTypeNum = randomRangeInt(0, this.simpleCellTypes.length);
+    let cellTypeNum = randomRangeInt(0, this.cellColors.length);
     let cellData = new CellData();
-    cellData.type = this.simpleCellTypes[cellTypeNum];
+    cellData.type = this.cellColors[cellTypeNum];
     cellData.virtualCol = x;
     cellData.virtualRow = y;
     return cellData;
   }
 
+  public addModifier(cellType: CellTypes){
+    this.cellModificator = cellType;
+  }
+
   public onTouch(pos: Vec3) {
-    let strategy = new SimpleCellStrategy();
+
+    let strategy = this.chooseStrategy(this.cellModificator);
+    this.cellModificator = CellTypes.SIMPLE;
 
     let clickedCellIndex = this.fieldData.screenPosToIndex(pos);
 
-    let killedCells = strategy.calculateKilledCells(this.fieldData, clickedCellIndex);
+    let killedCells = strategy.getDestroyedCells(this.fieldData, clickedCellIndex);
 
     if (killedCells.length > 0) {
       let killedCellsData = killedCells.map((cellIndex) => this.fieldData.cells[cellIndex]);
@@ -67,8 +85,6 @@ export class FieldModel extends Component {
       }
 
       let newCells = this.generateNewCells(fieldCopy);
-
-      // this.getNewField(killedCellsData);
 
       let newField = new Field(
         this.gameConfig.cellSize.x,
@@ -112,34 +128,6 @@ export class FieldModel extends Component {
     }
 
     return newCells;
-  }
-
-
-  private getNewField(killedCells) {
-    let oldCells = Object.assign([], this.fieldData.cells);
-    let changedField = Object.assign([], this.fieldData.cells);
-    for (let index = 0; index < this.fieldData.col; index++) {
-      this.packColumn(index, changedField);
-    }
-
-    let newCells = this.generateNewCells(changedField);
-    this.fieldData.cells = changedField;
-
-    let newField = new Field(
-      this.gameConfig.cellSize.x,
-      this.gameConfig.cellSize.y,
-      this.gameConfig.sizeX,
-      this.gameConfig.sizeY
-    );
-    newField.cells = changedField;
-
-    let oldField = new Field(
-      this.gameConfig.cellSize.x,
-      this.gameConfig.cellSize.y,
-      this.gameConfig.sizeX,
-      this.gameConfig.sizeY
-    );
-    oldField.cells = oldCells
   }
 
   private packColumn(colIndex: number, fieldCopy: CellData[]): void {

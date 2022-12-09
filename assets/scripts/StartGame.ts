@@ -7,7 +7,7 @@ import { TurnsController } from "./TurnsController";
 import { TurnsCounterView } from "./views/TurnsCounterView";
 import { GameConfig } from "./GameConfig";
 import { EndGamePopupView } from "./views/EndGamePopupView";
-import { GameMediator } from "./GameMediator";
+import { GameMediator as VictoryController } from "./GameMediator";
 import { FieldView } from './views/FieldView';
 import { FieldController } from "./field/FieldController";
 const { ccclass, property } = _decorator;
@@ -29,28 +29,28 @@ export class StartGame extends Component {
   private fieldController: FieldController = null;
   private readonly scoreController = new ScoreController();
   private readonly turnsController = new TurnsController();
-  private gameMediator: GameMediator = null;
+  private victoryController: VictoryController = null;
   private fieldModel: FieldModel = null;
 
   start() {
     this.fieldModel = new FieldModel();
     this.fieldController = new FieldController(this.fieldModel, this.fieldView);
-    this.gameMediator = new GameMediator(this.scoreController, this.turnsController, this.gameConfig);
+    this.victoryController = new VictoryController(this.scoreController, this.turnsController, this.gameConfig);
 
-    this.gameMediator.onResetGame.on(GameEvents.onResetGame, this.onResetGame, this);
-    this.gameMediator.onGameOver.on(GameEvents.onGameOver, this.onGameEnd, this);
+    this.victoryController.onResetGame.on(GameEvents.onResetGame, this.onResetGame, this);
+    this.victoryController.onGameOver.on(GameEvents.onGameOver, this.onGameEnd, this);
     this.fieldController.onCellDestoyed.on(GameEvents.onCellsDestoy, this.onFieldClick, this);
 
     this.scoreView.init(this.scoreController);
     this.turnsView.init(this.turnsController);
-    this.endGamePopupView.init(this.gameMediator);
+    this.endGamePopupView.init(this.victoryController);
 
     this.turnsController.setTurns(this.gameConfig.turnsCount);
     this.fieldController.createField(this.gameConfig);
   }
 
   private onFieldClick(destroyedCount: number): void {
-    this.gameMediator.onTurnMade(destroyedCount);
+    this.victoryController.onTurnMade(destroyedCount);
   }
 
   private onGameEnd(win: boolean) {
