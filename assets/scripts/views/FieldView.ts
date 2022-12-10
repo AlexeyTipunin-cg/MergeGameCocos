@@ -1,14 +1,4 @@
-import {
-  _decorator,
-  Component,
-  Node,
-  EventTarget,
-  UITransform,
-  Vec2,
-  tween,
-  Vec3,
-  UIOpacity,
-} from "cc";
+import { _decorator, Component, Node, EventTarget, UITransform, Vec3, UIOpacity, } from "cc";
 import { AnimationData } from "../AnimationData";
 import { Cell, CellData } from "../Cell";
 import { CellPrefabsFactory } from "../CellPrefabsFactory";
@@ -91,7 +81,7 @@ export class FieldView extends Component {
   }
 
   private onTouchFieldCallback(pos: Vec3) {
-    if (!this.animation.isCompleted() && !this.disappearAnimation.isDone()) {
+    if (!this.animation.isCompleted() || !this.disappearAnimation.isDone()) {
       return;
     }
 
@@ -118,12 +108,34 @@ export class FieldView extends Component {
         let animData: AnimationData = new AnimationData();
         animData.target = targetNode;
         animData.from = targetNode.position;
-        animData.to = oldField.indexToFieldPos(cellIndex);
+        animData.to = newField.indexToFieldPos(cellIndex);
         col.push(animData);
       }
     }
 
     return animationData;
+  }
+
+  private createFieldDifGeneric(oldField: Field, newField: Field): AnimationData[] {
+    let animationData: AnimationData[] = [];
+    for (let index = 0; index < newField.cellsCount; index++) {
+      const element = newField.cells[index];
+      let targetNode = this.cellDataToView.get(element).node;
+      let currentIndex = newField.screenPosToIndex(targetNode.position);
+
+      if (index == currentIndex) {
+        continue;
+      }
+
+      let animData: AnimationData = new AnimationData();
+      animData.target = targetNode;
+      animData.from = targetNode.position;
+      animData.to = newField.indexToFieldPos(index);
+
+      animationData.push(animData);
+    }
+
+    return animationData
   }
 
   private destroyAnimation(fieldChangeData: FieldChangeData) {
@@ -136,9 +148,16 @@ export class FieldView extends Component {
   }
 
   private updateField(fieldChangeData: FieldChangeData) {
-    fieldChangeData.killedCells.forEach((value) => this.destroyCell(value));
-    this.createCells(fieldChangeData.createdCells);
-    let animDatas = this.createFieldDif(fieldChangeData.oldField, fieldChangeData.newField);
-    this.animation.animateField(1000, animDatas);
+    if (fieldChangeData.createdCells.length == 0 && fieldChangeData.killedCells.length == 0) {
+      ;
+      let animDatas = this.createFieldDifGeneric(fieldChangeData.oldField, fieldChangeData.newField);
+      this.animation.animateShuffle(1000, animDatas);
+    } else {
+      fieldChangeData.killedCells.forEach((value) => this.destroyCell(value));
+      this.createCells(fieldChangeData.createdCells);
+      let animDatas = this.createFieldDif(fieldChangeData.oldField, fieldChangeData.newField);
+      this.animation.animateField(1000, animDatas);
+    }
+
   }
 }

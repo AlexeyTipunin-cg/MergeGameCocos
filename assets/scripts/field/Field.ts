@@ -24,6 +24,10 @@ export class Field {
     return this.row;
   }
 
+  public get cellsCount(): number{
+    return this.cells.length;
+  }
+
   public getCell(pos: Vec3): CellData {
     let index = this.screenPosToIndex(pos);
     return this.cells[index];

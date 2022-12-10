@@ -1,21 +1,29 @@
-import { EventTarget } from "cc";
-import { GameEvents } from "./GameEvents";
-
+import { ShuffleModel } from './SuffleModel';
+import { ShuffleView } from './views/ShuffleView';
+import { GameEvents } from './GameEvents';
+import { EventTarget } from 'cc';
 export class ShuffleController {
-  public onShuffleUpdate: EventTarget = new EventTarget();
-  private _shuffles: number = 0;
+    private shuffleModel: ShuffleModel;
+    private shuffleView: ShuffleView;
 
-  public get shuffles(): number {
-    return this.shuffles;
-  }
+    public onShuffleEvent: EventTarget = new EventTarget();
 
-  public setShuffles(value: number) {
-    this._shuffles = value;
+    constructor(shuffleModel: ShuffleModel, shuffleView: ShuffleView) {
+        this.shuffleModel = shuffleModel;
+        this.shuffleView = shuffleView;
+        this.shuffleView.onBtnClick.on(GameEvents.onShuffle, this.onShuffle, this);
+        this.shuffleModel.onShuffleUpdate.on(GameEvents.onShuffle, this.onShuffleUpdate, this);
+    }
 
-  }
+    private onShuffle() {
+        if (this.shuffleModel.shuffles > 0) {
+            this.shuffleModel.makeShaffle();
+        }
+    }
 
-  public makeShaffle() {
-    this._shuffles--;
-    this.onShuffleUpdate.emit(GameEvents.onShuffle, this.shuffles);
-  }
+    private onShuffleUpdate(count: number) {
+        this.shuffleView.updateCount(count);
+    }
+
+
 }

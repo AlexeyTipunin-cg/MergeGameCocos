@@ -4,7 +4,7 @@ import { ScoreController } from './ScoreController';
 import { TurnsController } from './TurnsController';
 import { GameConfig } from './GameConfig';
 import { GameStates } from './GameStates';
-import { ShuffleController } from './ShuffleController';
+import { ShuffleModel } from './SuffleModel';
 
 export class VictoryController {
     public onGameOver: EventTarget = new EventTarget();
@@ -12,11 +12,11 @@ export class VictoryController {
 
     private scoreController: ScoreController = null;
     private turnsController: TurnsController = null;
-    private shuffleController: ShuffleController = null;
+    private shuffleController: ShuffleModel = null;
     private config: GameConfig = null;
     public gameState: GameStates = GameStates.PLAYING;
 
-    constructor(scoreController: ScoreController, turnsController: TurnsController, shuffleController: ShuffleController, config: GameConfig) {
+    constructor(scoreController: ScoreController, turnsController: TurnsController, shuffleController: ShuffleModel, config: GameConfig) {
         this.scoreController = scoreController;
         this.turnsController = turnsController;
         this.shuffleController = shuffleController;

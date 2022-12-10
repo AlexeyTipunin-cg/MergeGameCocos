@@ -1,4 +1,4 @@
-import { _decorator, Component, EventTarget, Vec3, randomRangeInt, Enum } from 'cc';
+import { _decorator, Component, EventTarget, Vec3, randomRangeInt, Enum, random } from 'cc';
 import { CellData } from '../Cell';
 import { Field } from "./Field";
 import { GameEvents } from '../GameEvents';
@@ -152,6 +152,30 @@ export class FieldModel extends Component {
         empty = empty + this.fieldData.col;
       }
     }
+  }
+
+  public shuffle(): void {
+    let oldFieldCells = Object.assign([], this.fieldData.cells);
+    let newField = Object.assign([], this.fieldData.cells);
+    let field = this.fieldData;
+    for (let index = 0; index < field.cellsCount; index++) {
+      let randomIndex = randomRangeInt(0, field.cellsCount);
+      let temp = field.cells[index];
+      field.cells[index] = field.cells[randomIndex];
+      field.cells[randomIndex] = temp;
+    }
+
+
+    let oldField = new Field(
+      this.gameConfig.cellSize.x,
+      this.gameConfig.cellSize.y,
+      this.gameConfig.sizeX,
+      this.gameConfig.sizeY
+    );
+    oldField.cells = oldFieldCells;
+
+    let fieldChangeData: FieldChangeData = new FieldChangeData([], [], oldField, this.fieldData);
+    this.onCellsDestoy.emit(GameEvents.onCellsDestoy, fieldChangeData);
   }
 
   private hasPairs(field: Field): boolean {

@@ -13,6 +13,8 @@ export class GameConfig extends Component {
     public winScore: number;
     @property(CCInteger)
     public turnsCount: number;
+    @property(CCInteger)
+    public shufflesCount: number;
 }
 
 
