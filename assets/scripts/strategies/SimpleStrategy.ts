@@ -3,7 +3,7 @@ import { CellStrategy } from './CellStrategy';
 
 export class SimpleCellStrategy implements CellStrategy {
 
-    public getDestroyedCells(field: Field, targetCell: number): number[] {
+    public getCellsToDestroy(field: Field, targetCell: number): number[] {
 
         let visited = new Array(field.cells.length);
         visited.fill(false);

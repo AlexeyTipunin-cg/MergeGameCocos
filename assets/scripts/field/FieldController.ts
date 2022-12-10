@@ -13,7 +13,8 @@ export class FieldController {
     private fieldModel: FieldModel;
     private fieldView: FieldView;
 
-    public onCellDestoyed: EventTarget = new EventTarget()
+    public onCellDestoyed: EventTarget = new EventTarget();
+    public onNoPairs: EventTarget = new EventTarget();
 
     constructor(fieldModel: FieldModel, fieldView: FieldView, ) {
         this.fieldModel = fieldModel;
@@ -22,6 +23,8 @@ export class FieldController {
         this.fieldView.onBombButtonClick.on(GameEvents.onCellTypeMod, this.onApplyModifier, this);
         this.fieldModel.onCellsDestoy.on(GameEvents.onCellsDestoy, this.onCellsDestroy, this);
         this.fieldModel.onCellsCreated.on(GameEvents.onCellsCreated, this.createCells, this);
+        this.fieldModel.onNoPairs.on(GameEvents.onCellsCreated, this.onNoPairsCb, this);
+
     }
 
     public createField(gameConfig: GameConfig): void {
@@ -47,5 +50,9 @@ export class FieldController {
 
     private onApplyModifier(cellType:CellTypes){
         this.fieldModel.addModifier(cellType);
+    }
+
+    private onNoPairsCb(){
+        this.onNoPairs.emit(GameEvents.onNoPairs);
     }
 }

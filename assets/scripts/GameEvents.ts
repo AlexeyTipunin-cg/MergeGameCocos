@@ -7,4 +7,6 @@ export enum GameEvents {
     onResetGame,
     onCellsCreated, 
     onCellTypeMod,
+    onNoPairs,
+    onShuffle
 }

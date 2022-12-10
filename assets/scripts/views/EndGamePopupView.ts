@@ -1,6 +1,6 @@
 import { _decorator, Component, Node, Button, Label, MeshCollider } from 'cc';
 import { GameEvents } from '../GameEvents';
-import { GameMediator } from '../GameMediator';
+import { VictoryController } from '../GameMediator';
 import { GameStates } from '../GameStates';
 const { ccclass, property } = _decorator;
 
@@ -11,7 +11,7 @@ export class EndGamePopupView extends Component {
     private resrartButton: Button = null;
     @property(Label)
     private text: Label = null;
-    private mediator: GameMediator = null;
+    private mediator: VictoryController = null;
 
     start() {
         this.resrartButton.node.on(Button.EventType.CLICK, this.resetGame, this);
@@ -26,7 +26,7 @@ export class EndGamePopupView extends Component {
     }
 
 
-    public init(mediator: GameMediator): void {
+    public init(mediator: VictoryController): void {
         this.mediator = mediator;
         this.mediator.onGameOver.on(GameEvents.onGameOver, this.setText, this)
     }

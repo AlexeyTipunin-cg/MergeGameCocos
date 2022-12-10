@@ -13,10 +13,11 @@ export class FieldModel extends Component {
   private fieldData: Field = null;
   public onCellsDestoy = new EventTarget();
   public onCellsCreated = new EventTarget();
+  public onNoPairs = new EventTarget();
   public gameConfig: GameConfig = null;
 
   private cellModificator: CellTypes = CellTypes.SIMPLE;
-  private cellColors : CellColors[]  = [CellColors.BLUE, CellColors.GREEN, CellColors.PURPLE, CellColors.RED, CellColors.YELLOW];
+  private cellColors: CellColors[] = [CellColors.BLUE, CellColors.GREEN, CellColors.PURPLE, CellColors.RED, CellColors.YELLOW];
 
   private chooseStrategy(cellType: CellTypes): CellStrategy {
     switch (cellType) {
@@ -52,6 +53,10 @@ export class FieldModel extends Component {
     this.onCellsCreated.emit(GameEvents.onCellsCreated, this.fieldData.cells);
   }
 
+  public addModifier(cellType: CellTypes) {
+    this.cellModificator = cellType;
+  }
+
   private createCell(x: number, y: number): CellData {
     let cellTypeNum = randomRangeInt(0, this.cellColors.length);
     let cellData = new CellData();
@@ -61,10 +66,6 @@ export class FieldModel extends Component {
     return cellData;
   }
 
-  public addModifier(cellType: CellTypes){
-    this.cellModificator = cellType;
-  }
-
   public onTouch(pos: Vec3) {
 
     let strategy = this.chooseStrategy(this.cellModificator);
@@ -72,7 +73,7 @@ export class FieldModel extends Component {
 
     let clickedCellIndex = this.fieldData.screenPosToIndex(pos);
 
-    let killedCells = strategy.getDestroyedCells(this.fieldData, clickedCellIndex);
+    let killedCells = strategy.getCellsToDestroy(this.fieldData, clickedCellIndex);
 
     if (killedCells.length > 0) {
       let killedCellsData = killedCells.map((cellIndex) => this.fieldData.cells[cellIndex]);
@@ -106,6 +107,10 @@ export class FieldModel extends Component {
 
       let fieldChangeData: FieldChangeData = new FieldChangeData(killedCellsData, newCells, oldField, newField);
       this.onCellsDestoy.emit(GameEvents.onCellsDestoy, fieldChangeData);
+
+      if (!this.hasPairs(this.fieldData)) {
+        this.onNoPairs.emit(GameEvents.onNoPairs);
+      }
     }
   }
 
@@ -147,6 +152,18 @@ export class FieldModel extends Component {
         empty = empty + this.fieldData.col;
       }
     }
+  }
+
+  private hasPairs(field: Field): boolean {
+
+    let traverseStrategy = new SimpleCellStrategy();
+    for (let index = 0; index < field.cells.length; index++) {
+      let cellsSameColors = traverseStrategy.getCellsToDestroy(field, index);
+      if (cellsSameColors.length > 1) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private destroyCell(index: number) {

@@ -3,7 +3,7 @@ import { CellStrategy } from './CellStrategy';
 
 export class BombStrategy implements CellStrategy {
 
-    public getDestroyedCells(field: Field, clickedCellIndex: number): number[] {
+    public getCellsToDestroy(field: Field, clickedCellIndex: number): number[] {
 
         let cellToKill = this.getRadius(field, clickedCellIndex, 1);
 

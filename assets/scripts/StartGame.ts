@@ -7,7 +7,7 @@ import { TurnsController } from "./TurnsController";
 import { TurnsCounterView } from "./views/TurnsCounterView";
 import { GameConfig } from "./GameConfig";
 import { EndGamePopupView } from "./views/EndGamePopupView";
-import { GameMediator as VictoryController } from "./GameMediator";
+import { VictoryController as VictoryController } from "./GameMediator";
 import { FieldView } from './views/FieldView';
 import { FieldController } from "./field/FieldController";
 const { ccclass, property } = _decorator;
@@ -40,6 +40,7 @@ export class StartGame extends Component {
     this.victoryController.onResetGame.on(GameEvents.onResetGame, this.onResetGame, this);
     this.victoryController.onGameOver.on(GameEvents.onGameOver, this.onGameEnd, this);
     this.fieldController.onCellDestoyed.on(GameEvents.onCellsDestoy, this.onFieldClick, this);
+    this.fieldController.onNoPairs.on(GameEvents.onNoPairs, this.onNoPairs, this)
 
     this.scoreView.init(this.scoreController);
     this.turnsView.init(this.turnsController);
@@ -47,6 +48,10 @@ export class StartGame extends Component {
 
     this.turnsController.setTurns(this.gameConfig.turnsCount);
     this.fieldController.createField(this.gameConfig);
+  }
+
+  private onNoPairs() {
+    this.victoryController.onNoPairs();
   }
 
   private onFieldClick(destroyedCount: number): void {
