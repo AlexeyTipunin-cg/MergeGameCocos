@@ -1,7 +1,7 @@
 import { EventTarget } from 'cc';
 import { GameEvents } from './GameEvents';
 
-export class TurnsController {
+export class TurnsModel {
 
     public onTurnUpdate: EventTarget = new EventTarget();
 

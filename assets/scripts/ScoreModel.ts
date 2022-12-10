@@ -1,7 +1,7 @@
 import { EventTarget } from "cc";
 import { GameEvents } from "./GameEvents";
 
-export class ScoreController {
+export class ScoreModel {
   public onScoreUpdate: EventTarget = new EventTarget();
   private playerScore: number = 0;
 

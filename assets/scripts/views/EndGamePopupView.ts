@@ -1,6 +1,6 @@
 import { _decorator, Component, Node, Button, Label, MeshCollider } from 'cc';
 import { GameEvents } from '../GameEvents';
-import { VictoryController } from '../GameMediator';
+import { VictoryController } from '../VictoryController';
 import { GameStates } from '../GameStates';
 const { ccclass, property } = _decorator;
 

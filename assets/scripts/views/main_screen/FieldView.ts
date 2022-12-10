@@ -1,16 +1,15 @@
 import { _decorator, Component, Node, EventTarget, UITransform, Vec3, UIOpacity, } from "cc";
-import { AnimationData } from "../AnimationData";
-import { Cell, CellData } from "../Cell";
-import { CellPrefabsFactory } from "../CellPrefabsFactory";
-import { Field } from "../field/Field";
-import { FieldAnimations } from "../field/FieldAnimations";
-import { FieldInput } from "../field/FieldInput";
-import { GameEvents } from "../GameEvents";
-import { FieldChangeData } from '../field/FieldChangeData';
-import { Button, animation } from 'cc';
-import { CellTypes } from '../CellTypes';
-import { DisappearAnimation } from '../DisappearAnimation';
-import { AnimationEvents } from '../AnimationEvents';
+import { AnimationData } from "../../AnimationData";
+import { Cell } from "../../Cell";
+import { CellData } from "../../CellData";
+import { CellPrefabsFactory } from "../../CellPrefabsFactory";
+import { Field } from "../../field/Field";
+import { FieldAnimations } from "../../field/FieldAnimations";
+import { FieldInput } from "../../field/FieldInput";
+import { GameEvents } from "../../GameEvents";
+import { FieldChangeData } from '../../field/FieldChangeData';
+import { DisappearAnimation } from '../../DisappearAnimation';
+import { AnimationEvents } from '../../AnimationEvents';
 const { ccclass, property } = _decorator;
 
 @ccclass("FieldView")
@@ -24,20 +23,14 @@ export class FieldView extends Component {
   @property({ type: FieldInput })
   private input: FieldInput = null;
 
-  @property({ type: Button })
-  private bombButton: Button
-
   private animation: FieldAnimations = new FieldAnimations();
   private disappearAnimation: DisappearAnimation = new DisappearAnimation();
 
   private cellDataToView = new Map<CellData, Cell>();
-
   public onTouchField: EventTarget = new EventTarget();
-  public onBombButtonClick: EventTarget = new EventTarget();
 
   start() {
     this.input.onFieldTouch.on(GameEvents.onTouchField, this.onTouchFieldCallback, this);
-    this.bombButton.node.on(Button.EventType.CLICK, this.onBombButtonClickCb, this);
   }
 
   public resetGame(): void {
@@ -74,10 +67,6 @@ export class FieldView extends Component {
     let cellView = this.cellDataToView.get(cellToDestroy);
     this.cellDataToView.delete(cellToDestroy);
     cellView.node.destroy();
-  }
-
-  private onBombButtonClickCb() {
-    this.onBombButtonClick.emit(GameEvents.onCellTypeMod, CellTypes.BOMB);
   }
 
   private onTouchFieldCallback(pos: Vec3) {

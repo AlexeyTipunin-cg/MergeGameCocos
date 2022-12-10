@@ -1,5 +1,5 @@
 import { ShuffleModel } from './SuffleModel';
-import { ShuffleView } from './views/ShuffleView';
+import { ShuffleView } from './views/main_screen/ShuffleView';
 import { GameEvents } from './GameEvents';
 import { EventTarget } from 'cc';
 export class ShuffleController {

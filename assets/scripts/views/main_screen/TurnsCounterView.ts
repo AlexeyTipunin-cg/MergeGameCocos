@@ -1,6 +1,6 @@
 import { _decorator, Component, Node, Label } from 'cc';
-import { GameEvents } from '../GameEvents';
-import { TurnsController } from '../TurnsModel';
+import { GameEvents } from '../../GameEvents';
+import { TurnsController } from '../../TurnsModel';
 const { ccclass, property } = _decorator;
 
 @ccclass('TurnsCounterView')

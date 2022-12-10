@@ -1,5 +1,5 @@
 import { _decorator, Component, EventTarget, Vec3, randomRangeInt, Enum, random } from 'cc';
-import { CellData } from '../Cell';
+import { CellData } from "../CellData";
 import { Field } from "./Field";
 import { GameEvents } from '../GameEvents';
 import { SimpleCellStrategy } from '../strategies/SimpleStrategy';
