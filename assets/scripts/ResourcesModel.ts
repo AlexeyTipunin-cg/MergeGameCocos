@@ -21,7 +21,7 @@ export class ResourcesModel {
 
     let bomb = new ResourceItem();
     bomb.type = ResourceTypes.Shuffle
-    bomb.count = this.gameConfig.shufflesCount;
+    bomb.count = this.gameConfig.bombsCount;
     bomb.name = "Bomb";
 
     this.resources.set(ResourceTypes.Shuffle, shuffle);

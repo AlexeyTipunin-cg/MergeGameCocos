@@ -5,9 +5,7 @@ import { TurnsCounterView } from './TurnsCounterView';
 import { ShuffleView } from './ShuffleView';
 import { ScoreModel } from '../../ScoreModel';
 import { TurnsModel } from '../../TurnsModel';
-import { GameEvents } from '../../GameEvents';
 import { BombView } from './BombView';
-import { CellTypes } from '../../CellTypes';
 import { ResourcesModel } from '../../ResourcesModel';
 import { ResourceTypes } from '../../data/ResourceItem';
 const { ccclass, property } = _decorator;
@@ -35,6 +33,8 @@ export class MainScreenView extends Component {
 
         this.shuffleView.button.text.string = resourcesModel.getResName(ResourceTypes.Shuffle);
         this.bombView.button.text.string = resourcesModel.getResName(ResourceTypes.Bomb);
+        this.updateShuffleCount(resourcesModel.getResCount(ResourceTypes.Shuffle));
+        this.updateBombCount(resourcesModel.getResCount(ResourceTypes.Bomb))
 
         this.shuffleView.button.node.on(Button.EventType.CLICK, this.onShuffleClick, this);
         this.bombView.button.node.on(Button.EventType.CLICK, this.onBombClick, this);
@@ -45,7 +45,7 @@ export class MainScreenView extends Component {
     }
 
     private onShuffleClick() {
-        this.onShuffleBtnClick.emit(GameEvents.onShuffle);
+        this.onShuffleBtnClick.emit(Button.EventType.CLICK);
     }
 
     public updateBombCount(count: number) {
@@ -53,7 +53,7 @@ export class MainScreenView extends Component {
     }
 
     private onBombClick() {
-        this.onBombBtnClick.emit(GameEvents.onCellTypeMod, CellTypes.BOMB);
+        this.onBombBtnClick.emit(Button.EventType.CLICK);
     }
 }
 

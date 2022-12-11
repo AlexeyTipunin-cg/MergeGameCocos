@@ -2,7 +2,7 @@ import { MainScreenView } from './MainScreenView';
 import { FieldModel } from '../../field/FieldModel';
 import { GameEvents } from '../../GameEvents';
 import { GameConfig } from '../../GameConfig';
-import { Vec3 } from 'cc';
+import { Button, Vec3 } from 'cc';
 import { FieldChangeData } from '../../field/FieldChangeData';
 import { CellData } from '../../CellData';
 import { CellTypes } from '../../CellTypes';
@@ -22,11 +22,11 @@ export class MainScreenController {
         this.fieldModel.onCellsDestoy.on(GameEvents.onCellsDestoy, this.onCellsDestroy, this);
         this.fieldModel.onCellsCreated.on(GameEvents.onCellsCreated, this.createCells, this);
 
-        this.mainScreenView.onShuffleBtnClick.on(GameEvents.onShuffle, this.onShuffleBtnClick, this);
+        this.mainScreenView.onShuffleBtnClick.on(Button.EventType.CLICK, this.onShuffleBtnClick, this);
         this.resourcesModel.subscribe(ResourceTypes.Shuffle, this.onSuffleApplied.bind(this));
 
-        this.mainScreenView.onBombBtnClick.on(GameEvents.onShuffle, this.onBombBtnClick);
-        this.resourcesModel.subscribe(ResourceTypes.Shuffle, this.onBombApplied.bind(this))
+        this.mainScreenView.onBombBtnClick.on(Button.EventType.CLICK, this.onBombBtnClick, this);
+        this.resourcesModel.subscribe(ResourceTypes.Bomb, this.onBombApplied.bind(this))
     }
 
 

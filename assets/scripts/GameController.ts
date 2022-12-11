@@ -32,13 +32,13 @@ export class GameController {
 
         this.victoryController.onResetGame.on(GameEvents.onResetGame, this.onResetGame, this);
         this.victoryController.onGameOver.on(GameEvents.onGameOver, this.onGameEnd, this);
+        this.fieldModel.onCellsDestoy.on(GameEvents.onCellsDestoy, this.onFieldClick, this);
+        this.fieldModel.onNoPairs.on(GameEvents.onNoPairs, this.onNoPairs, this)
 
         this.gameViewsStorage.mainScreenView.init(this.scoreController, this.turnsController, this.resourcesModel);
         this.gameViewsStorage.endGamePopupView.init(this.victoryController);
 
         this.mainScreenController = new MainScreenController(this.fieldModel, this.resourcesModel, this.gameViewsStorage.mainScreenView);
-        this.fieldModel.onCellsDestoy.on(GameEvents.onCellsDestoy, this.onFieldClick, this);
-        this.fieldModel.onNoPairs.on(GameEvents.onNoPairs, this.onNoPairs, this)
 
 
         this.turnsController.setTurns(this.gameConfig.turnsCount);
