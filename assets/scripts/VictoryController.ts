@@ -7,6 +7,7 @@ import { GameStates } from './GameStates';
 import { ShuffleModel } from './SuffleModel';
 import { ResourcesModel } from './ResourcesModel';
 import { ResourceTypes } from './data/ResourceItem';
+import { FieldChangeData } from './field/FieldChangeData';
 
 export class VictoryController {
     public onGameOver: EventTarget = new EventTarget();
@@ -25,12 +26,12 @@ export class VictoryController {
         this.config = config;
     }
 
-    public onTurnMade(destorydCellsCount: number): void {
+    public onTurnMade(fieldChangeData: FieldChangeData): void {
         if (this.gameState !== GameStates.PLAYING) {
             return;
         }
 
-        this.scoreController.setScore(destorydCellsCount);
+        this.scoreController.setScore(fieldChangeData.killedCells.length);
         this.turnsController.decreaseTurns();
 
 
