@@ -1,6 +1,6 @@
 import { EventTarget } from "cc";
-import { GameEvents } from "./GameEvents";
-import { GameConfig } from './GameConfig';
+import { GameEvents } from "../data/GameEvents";
+import { GameConfig } from '../GameConfig';
 
 export class ShuffleModel {
   public onResourceUpdate: EventTarget = new EventTarget();

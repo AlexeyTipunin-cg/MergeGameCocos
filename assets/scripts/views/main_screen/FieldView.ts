@@ -1,15 +1,15 @@
 import { _decorator, Component, Node, EventTarget, UITransform, Vec3, UIOpacity, } from "cc";
-import { AnimationData } from "../../AnimationData";
-import { Cell } from "../../Cell";
-import { CellData } from "../../CellData";
+import { AnimationData } from "../../animation/AnimationData";
+import { Cell } from "../Cell";
+import { CellData } from "../../data/CellData";
 import { CellPrefabsFactory } from "../../CellPrefabsFactory";
 import { Field } from "../../field/Field";
-import { FieldAnimations } from "../../field/FieldAnimations";
+import { FieldAnimations } from "../../animation/FieldAnimations";
 import { FieldInput } from "../../field/FieldInput";
-import { GameEvents } from "../../GameEvents";
+import { GameEvents } from "../../data/GameEvents";
 import { FieldChangeData } from '../../field/FieldChangeData';
-import { DisappearAnimation } from '../../DisappearAnimation';
-import { AnimationEvents } from '../../AnimationEvents';
+import { DisappearAnimation } from '../../animation/DisappearAnimation';
+import { AnimationEvents } from '../../animation/AnimationEvents';
 const { ccclass, property } = _decorator;
 
 @ccclass("FieldView")

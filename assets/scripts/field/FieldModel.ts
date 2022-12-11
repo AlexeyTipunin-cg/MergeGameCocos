@@ -1,10 +1,10 @@
 import { _decorator, Component, EventTarget, Vec3, randomRangeInt, Enum, random } from 'cc';
-import { CellData } from "../CellData";
+import { CellData } from "../data/CellData";
 import { Field } from "./Field";
-import { GameEvents } from '../GameEvents';
+import { GameEvents } from '../data/GameEvents';
 import { SimpleCellStrategy } from '../strategies/SimpleStrategy';
 import { GameConfig } from "../GameConfig";
-import { CellTypes, CellColors } from '../CellTypes';
+import { CellTypes, CellColors } from '../data/CellTypes';
 import { FieldChangeData } from './FieldChangeData';
 import { BombStrategy } from "../strategies/BombStrategy";
 import { CellStrategy } from '../strategies/CellStrategy';

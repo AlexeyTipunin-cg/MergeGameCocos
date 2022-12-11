@@ -1,6 +1,6 @@
 import { _decorator, Component, Sprite, SpriteFrame, instantiate, Prefab } from 'cc';
-import { Cell } from './Cell';
-import { CellData } from "./CellData";
+import { Cell } from './views/Cell';
+import { CellData } from "./data/CellData";
 const { ccclass, property } = _decorator;
 
 

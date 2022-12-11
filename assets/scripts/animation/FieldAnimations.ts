@@ -1,4 +1,4 @@
-import { AnimationData } from "../AnimationData";
+import { AnimationData } from "./AnimationData";
 import { ColumnAnimation } from "./ColumnAnimation";
 import { tween, TweenSystem, Vec3 } from 'cc';
 

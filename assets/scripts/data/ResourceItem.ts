@@ -1,5 +1,5 @@
 import { EventTarget } from 'cc';
-import { GameEvents } from '../GameEvents';
+import { GameEvents } from './GameEvents';
 
 export class ResourceItem {
     public onUpdate: EventTarget = new EventTarget();

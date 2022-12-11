@@ -1,15 +1,15 @@
 import { EventTarget } from 'cc';
-import { GameEvents } from './GameEvents';
+import { GameEvents } from '../data/GameEvents';
 import { ScoreModel } from './ScoreModel';
 import { TurnsModel } from './TurnsModel';
-import { GameConfig } from './GameConfig';
-import { GameStates } from './GameStates';
+import { GameConfig } from '../GameConfig';
+import { GameStates } from '../data/GameStates';
 import { ShuffleModel } from './SuffleModel';
 import { ResourcesModel } from './ResourcesModel';
-import { ResourceTypes } from './data/ResourceItem';
-import { FieldChangeData } from './field/FieldChangeData';
+import { ResourceTypes } from '../data/ResourceItem';
+import { FieldChangeData } from '../field/FieldChangeData';
 
-export class VictoryController {
+export class VictoryModel {
     public onGameOver: EventTarget = new EventTarget();
     public onResetGame: EventTarget = new EventTarget();
 

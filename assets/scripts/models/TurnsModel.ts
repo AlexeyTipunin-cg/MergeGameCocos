@@ -1,5 +1,5 @@
 import { EventTarget } from 'cc';
-import { GameEvents } from './GameEvents';
+import { GameEvents } from '../data/GameEvents';
 
 export class TurnsModel {
 

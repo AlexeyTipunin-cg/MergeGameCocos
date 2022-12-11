@@ -1,5 +1,5 @@
 import { _decorator, Component } from "cc";
-import { GameConfig } from "./GameConfig";
+import { GameConfig } from "./config/GameConfig";
 import { GameViewsStorage } from './views/GameViewsStorage';
 import { GameController } from './GameController';
 const { ccclass, property } = _decorator;

@@ -1,5 +1,5 @@
 import { _decorator, Component } from 'cc';
-import { CellData } from './CellData';
+import { CellData } from '../data/CellData';
 const { ccclass, property } = _decorator;
 
 @ccclass('Cell')

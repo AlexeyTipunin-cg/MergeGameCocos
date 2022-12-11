@@ -1,6 +1,6 @@
-import { GameConfig } from './GameConfig';
-import { ResourceTypes, ResourceItem } from './data/ResourceItem';
-import { GameEvents } from './GameEvents';
+import { GameConfig } from '../GameConfig';
+import { ResourceTypes, ResourceItem } from '../data/ResourceItem';
+import { GameEvents } from '../data/GameEvents';
 
 export class ResourcesModel {
   private resources = new Map<ResourceTypes, ResourceItem>();

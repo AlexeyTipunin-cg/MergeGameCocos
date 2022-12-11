@@ -1,12 +1,12 @@
 import { MainScreenView } from './MainScreenView';
 import { FieldModel } from '../../field/FieldModel';
-import { GameEvents } from '../../GameEvents';
-import { GameConfig } from '../../GameConfig';
+import { GameEvents } from '../../data/GameEvents';
+import { GameConfig } from '../../config/GameConfig';
 import { Button, Vec3 } from 'cc';
 import { FieldChangeData } from '../../field/FieldChangeData';
-import { CellData } from '../../CellData';
-import { CellTypes } from '../../CellTypes';
-import { ResourcesModel } from '../../ResourcesModel';
+import { CellData } from '../../data/CellData';
+import { CellTypes } from '../../data/CellTypes';
+import { ResourcesModel } from '../../models/ResourcesModel';
 import { ResourceTypes } from '../../data/ResourceItem';
 export class MainScreenController {
     private fieldModel: FieldModel;

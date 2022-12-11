@@ -3,10 +3,10 @@ import { FieldView } from './FieldView';
 import { ScoreView } from './ScoreView';
 import { TurnsCounterView } from './TurnsCounterView';
 import { ShuffleView } from './ShuffleView';
-import { ScoreModel } from '../../ScoreModel';
-import { TurnsModel } from '../../TurnsModel';
+import { ScoreModel } from '../../models/ScoreModel';
+import { TurnsModel } from '../../models/TurnsModel';
 import { BombView } from './BombView';
-import { ResourcesModel } from '../../ResourcesModel';
+import { ResourcesModel } from '../../models/ResourcesModel';
 import { ResourceTypes } from '../../data/ResourceItem';
 const { ccclass, property } = _decorator;
 

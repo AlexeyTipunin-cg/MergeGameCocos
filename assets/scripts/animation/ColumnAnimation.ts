@@ -1,5 +1,5 @@
 import { tween, TweenSystem } from "cc";
-import { AnimationData } from "../AnimationData";
+import { AnimationData } from "./AnimationData";
 
 export class ColumnAnimation {
 
