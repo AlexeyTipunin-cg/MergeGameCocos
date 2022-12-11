@@ -15,6 +15,9 @@ export class GameConfig extends Component {
     public turnsCount: number;
     @property(CCInteger)
     public shufflesCount: number;
+    @property(CCInteger)
+    public bombsCount: number;
+
 }
 
 

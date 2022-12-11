@@ -1,25 +1,22 @@
 import { GameViewsStorage } from './views/GameViewsStorage';
 import { GameConfig } from './GameConfig';
-import { FieldController } from './field/FieldController';
-import { TurnsController } from './TurnsModel';
+import { TurnsModel } from './TurnsModel';
 import { ScoreModel } from './ScoreModel';
-import { ShuffleModel } from './SuffleModel';
 import { VictoryController } from './VictoryController';
 import { FieldModel } from './field/FieldModel';
-import { ShuffleController } from './ShuffleController';
 import { GameEvents } from './GameEvents';
-import { ScoreView } from './views/main_screen/ScoreView';
+import { MainScreenController as MainScreenController } from './views/main_screen/MainScreenController';
+import { ResourcesModel } from './ResourcesModel';
 export class GameController {
 
     private gameConfig: GameConfig = null;
     private gameViewsStorage: GameViewsStorage = null;
-    private fieldController: FieldController = null;
     private readonly scoreController = new ScoreModel();
-    private readonly turnsController = new TurnsController();
-    private shuffleModel: ShuffleModel = null;
+    private readonly turnsController = new TurnsModel();
+    private resourcesModel: ResourcesModel = null;
     private victoryController: VictoryController = null;
     private fieldModel: FieldModel = new FieldModel();
-    private shuffleController: ShuffleController = null;
+    private mainScreenController: MainScreenController = null;
 
     constructor(gameConfig: GameConfig, gameViewsStorage: GameViewsStorage) {
         this.gameConfig = gameConfig;
@@ -27,25 +24,25 @@ export class GameController {
     }
 
     public startGame(): void {
-        this.shuffleModel = new ShuffleModel();
-        this.shuffleController = new ShuffleController(this.shuffleModel, this.gameViewsStorage.mainScreenView.sh);
-        this.shuffleModel.setConfig(this.gameConfig);
-        this.shuffleModel.init();
+        this.resourcesModel = new ResourcesModel();
+        this.resourcesModel.setConfig(this.gameConfig);
+        this.resourcesModel.init();
 
-        this.fieldController = new FieldController(this.fieldModel, this.shuffleModel, this.gameViewsStorage.fieldView);
-        this.victoryController = new VictoryController(this.scoreController, this.turnsController, this.shuffleModel, this.gameConfig);
+        this.victoryController = new VictoryController(this.scoreController, this.turnsController, this.resourcesModel, this.gameConfig);
 
         this.victoryController.onResetGame.on(GameEvents.onResetGame, this.onResetGame, this);
         this.victoryController.onGameOver.on(GameEvents.onGameOver, this.onGameEnd, this);
-        this.fieldController.onCellDestoyed.on(GameEvents.onCellsDestoy, this.onFieldClick, this);
-        this.fieldController.onNoPairs.on(GameEvents.onNoPairs, this.onNoPairs, this)
 
-        this.gameViewsStorage.mainScreenView.ScoreView.init(this.scoreController);
-        this.gameViewsStorage.turnsView.init(this.turnsController);
+        this.gameViewsStorage.mainScreenView.init(this.scoreController, this.turnsController, this.resourcesModel);
         this.gameViewsStorage.endGamePopupView.init(this.victoryController);
 
+        this.mainScreenController = new MainScreenController(this.fieldModel, this.resourcesModel, this.gameViewsStorage.mainScreenView);
+        this.fieldModel.onCellsDestoy.on(GameEvents.onCellsDestoy, this.onFieldClick, this);
+        this.fieldModel.onNoPairs.on(GameEvents.onNoPairs, this.onNoPairs, this)
+
+
         this.turnsController.setTurns(this.gameConfig.turnsCount);
-        this.fieldController.createField(this.gameConfig);
+        this.mainScreenController.createField(this.gameConfig);
     }
 
     private onNoPairs() {
@@ -69,7 +66,7 @@ export class GameController {
 
         this.turnsController.setTurns(this.gameConfig.turnsCount);
         this.scoreController.reset();
-        this.fieldController.resetField();
-        this.fieldController.createField(this.gameConfig);
+        this.mainScreenController.resetField();
+        this.mainScreenController.createField(this.gameConfig);
     }
 }

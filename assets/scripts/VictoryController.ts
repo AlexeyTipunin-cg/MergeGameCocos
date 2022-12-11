@@ -5,6 +5,8 @@ import { TurnsModel } from './TurnsModel';
 import { GameConfig } from './GameConfig';
 import { GameStates } from './GameStates';
 import { ShuffleModel } from './SuffleModel';
+import { ResourcesModel } from './ResourcesModel';
+import { ResourceTypes } from './data/ResourceItem';
 
 export class VictoryController {
     public onGameOver: EventTarget = new EventTarget();
@@ -12,14 +14,14 @@ export class VictoryController {
 
     private scoreController: ScoreModel = null;
     private turnsController: TurnsModel = null;
-    private shuffleController: ShuffleModel = null;
+    private resModel: ResourcesModel = null;
     private config: GameConfig = null;
     public gameState: GameStates = GameStates.PLAYING;
 
-    constructor(scoreController: ScoreModel, turnsController: TurnsModel, shuffleController: ShuffleModel, config: GameConfig) {
+    constructor(scoreController: ScoreModel, turnsController: TurnsModel, resModel: ResourcesModel, config: GameConfig) {
         this.scoreController = scoreController;
         this.turnsController = turnsController;
-        this.shuffleController = shuffleController;
+        this.resModel = resModel;
         this.config = config;
     }
 
@@ -44,7 +46,7 @@ export class VictoryController {
     }
 
     public onNoPairs() {
-        if (this.shuffleController.shuffles === 0) {
+        if (this.resModel.getResCount(ResourceTypes.Shuffle) === 0) {
             this.setLooseState();
         }
     }

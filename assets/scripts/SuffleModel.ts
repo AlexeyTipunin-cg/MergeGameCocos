@@ -3,8 +3,8 @@ import { GameEvents } from "./GameEvents";
 import { GameConfig } from './GameConfig';
 
 export class ShuffleModel {
-  public onShuffleUpdate: EventTarget = new EventTarget();
-  private _shuffles: number = 0;
+  public onResourceUpdate: EventTarget = new EventTarget();
+  private _resourceCount: number = 0;
   private gameConfig: GameConfig = null;
 
   public setConfig(gameConfig: GameConfig): void {
@@ -16,17 +16,17 @@ export class ShuffleModel {
   }
 
   public get shuffles(): number {
-    return this._shuffles;
+    return this._resourceCount;
   }
 
   private set shuffles(count: number) {
-    this._shuffles = count;
-    this.onShuffleUpdate.emit(GameEvents.onShuffle, this.shuffles);
+    this._resourceCount = count;
+    this.onResourceUpdate.emit(GameEvents.onShuffle, this.shuffles);
   }
 
-
-
   public makeShaffle(): void {
-    this.shuffles--;
+    if (this.shuffles > 0) {
+      this.shuffles--;
+    }
   }
 }

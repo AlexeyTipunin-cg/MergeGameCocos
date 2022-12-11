@@ -27,7 +27,7 @@ export class FieldController {
         this.fieldModel.onCellsDestoy.on(GameEvents.onCellsDestoy, this.onCellsDestroy, this);
         this.fieldModel.onCellsCreated.on(GameEvents.onCellsCreated, this.createCells, this);
         this.fieldModel.onNoPairs.on(GameEvents.onCellsCreated, this.onNoPairsCb, this);
-        this.shuffleModel.onShuffleUpdate.on(GameEvents.onShuffle, this.onShufflesUpdate, this);
+        this.shuffleModel.onResourceUpdate.on(GameEvents.onShuffle, this.onShufflesUpdate, this);
 
     }
 

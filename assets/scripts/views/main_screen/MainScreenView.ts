@@ -8,6 +8,8 @@ import { TurnsModel } from '../../TurnsModel';
 import { GameEvents } from '../../GameEvents';
 import { BombView } from './BombView';
 import { CellTypes } from '../../CellTypes';
+import { ResourcesModel } from '../../ResourcesModel';
+import { ResourceTypes } from '../../data/ResourceItem';
 const { ccclass, property } = _decorator;
 
 @ccclass('MainScreenView')
@@ -27,9 +29,12 @@ export class MainScreenView extends Component {
     public onShuffleBtnClick: EventTarget = new EventTarget();
     public onBombBtnClick: EventTarget = new EventTarget();
 
-    public init(scoreModel: ScoreModel, turnsModel: TurnsModel) {
+    public init(scoreModel: ScoreModel, turnsModel: TurnsModel, resourcesModel: ResourcesModel) {
         this.turnsCounterView.init(turnsModel);
         this.scoreView.init(scoreModel);
+
+        this.shuffleView.button.text.string = resourcesModel.getResName(ResourceTypes.Shuffle);
+        this.bombView.button.text.string = resourcesModel.getResName(ResourceTypes.Bomb);
 
         this.shuffleView.button.node.on(Button.EventType.CLICK, this.onShuffleClick, this);
         this.bombView.button.node.on(Button.EventType.CLICK, this.onBombClick, this);

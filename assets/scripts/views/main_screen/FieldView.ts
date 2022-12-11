@@ -138,7 +138,6 @@ export class FieldView extends Component {
 
   private updateField(fieldChangeData: FieldChangeData) {
     if (fieldChangeData.createdCells.length == 0 && fieldChangeData.killedCells.length == 0) {
-      ;
       let animDatas = this.createFieldDifGeneric(fieldChangeData.oldField, fieldChangeData.newField);
       this.animation.animateShuffle(1000, animDatas);
     } else {
