@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, EventTarget, UITransform, Vec3, UIOpacity, } from "cc";
+import { _decorator, Component, Node, EventTarget, UITransform, Vec3, UIOpacity, TweenSystem } from 'cc';
 import { AnimationData } from "../../animation/AnimationData";
 import { Cell } from "../Cell";
 import { CellData } from "../../data/CellData";
@@ -31,6 +31,10 @@ export class FieldView extends Component {
 
   start() {
     this.input.onFieldTouch.on(GameEvents.onTouchField, this.onTouchFieldCallback, this);
+  }
+
+  onDestroy() {
+    TweenSystem.instance.ActionManager.removeAllActions();
   }
 
   public resetGame(): void {
