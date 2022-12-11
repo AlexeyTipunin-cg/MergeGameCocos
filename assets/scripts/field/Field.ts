@@ -1,5 +1,5 @@
 import { _decorator, Node, Vec3, Vec2 } from "cc";
-import { CellData } from "../Cell";
+import { CellData } from "../data/CellData";
 
 export class Field {
   private cellWidth: number;

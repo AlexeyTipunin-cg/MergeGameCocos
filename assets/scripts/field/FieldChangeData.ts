@@ -1,4 +1,4 @@
-import { CellData } from '../Cell';
+import { CellData } from "../data/CellData";
 import { Field } from './Field';
 export class FieldChangeData {
     public readonly killedCells: CellData[];

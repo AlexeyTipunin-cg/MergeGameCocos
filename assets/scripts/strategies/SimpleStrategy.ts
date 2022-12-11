@@ -25,7 +25,11 @@ export class SimpleCellStrategy implements CellStrategy {
             indexArray = indexArray.concat(nn);
         }
 
-        return res;
+        if (res.length > 1) {
+            return res
+        }
+
+        return [];
     }
 
     private findNeihbours(field: Field, index: number): number[] {
