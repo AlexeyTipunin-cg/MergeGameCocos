@@ -176,6 +176,10 @@ export class FieldModel extends Component {
 
     let fieldChangeData: FieldChangeData = new FieldChangeData([], [], oldField, this.fieldData);
     this.onCellsDestoy.emit(GameEvents.onCellsDestoy, fieldChangeData);
+    
+    if (!this.hasPairs(this.fieldData)) {
+      this.onNoPairs.emit(GameEvents.onNoPairs);
+    }
   }
 
   private hasPairs(field: Field): boolean {
