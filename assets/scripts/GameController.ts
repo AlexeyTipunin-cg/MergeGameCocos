@@ -41,7 +41,6 @@ export class GameController {
 
         this.mainScreenController = new MainScreenController(this.fieldModel, this.resourcesModel, this.gameViewsStorage.mainScreenView);
 
-
         this.turnsController.setTurns(this.gameConfig.turnsCount);
         this.mainScreenController.createField(this.gameConfig);
     }
@@ -64,6 +63,8 @@ export class GameController {
 
     private resetGame(): void {
         this.gameViewsStorage.endGamePopupView.node.active = false;
+
+        this.resourcesModel.reset();
 
         this.turnsController.setTurns(this.gameConfig.turnsCount);
         this.scoreController.reset();

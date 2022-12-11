@@ -1,4 +1,4 @@
-import { GameConfig } from '../GameConfig';
+import { GameConfig } from '../config/GameConfig';
 import { ResourceTypes, ResourceItem } from '../data/ResourceItem';
 import { GameEvents } from '../data/GameEvents';
 
@@ -26,6 +26,11 @@ export class ResourcesModel {
 
     this.resources.set(ResourceTypes.Shuffle, shuffle);
     this.resources.set(ResourceTypes.Bomb, bomb);
+  }
+
+  public reset() {
+    this.resources.get(ResourceTypes.Shuffle).count = this.gameConfig.shufflesCount;
+    this.resources.get(ResourceTypes.Bomb).count = this.gameConfig.bombsCount;
   }
 
   public getResCount(resType: ResourceTypes): number {

@@ -3,7 +3,7 @@ import { CellData } from "../data/CellData";
 import { Field } from "./Field";
 import { GameEvents } from '../data/GameEvents';
 import { SimpleCellStrategy } from '../strategies/SimpleStrategy';
-import { GameConfig } from "../GameConfig";
+import { GameConfig } from "../config/GameConfig";
 import { CellTypes, CellColors } from '../data/CellTypes';
 import { FieldChangeData } from './FieldChangeData';
 import { BombStrategy } from "../strategies/BombStrategy";

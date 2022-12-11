@@ -5,8 +5,7 @@ export enum GameEvents {
     onTurnUpdate,
     onGameOver,
     onResetGame,
-    onCellsCreated, 
-    onCellTypeMod,
+    onCellsCreated,
     onNoPairs,
     onShuffle,
     onResourceSpend

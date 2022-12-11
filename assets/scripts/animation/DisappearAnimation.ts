@@ -1,4 +1,4 @@
-import { tween, UIOpacity, Vec2, EventTarget, Tween, TweenSystem } from 'cc';
+import { tween, UIOpacity, Vec2, EventTarget } from 'cc';
 import { AnimationEvents } from './AnimationEvents';
 
 export class DisappearAnimation {
