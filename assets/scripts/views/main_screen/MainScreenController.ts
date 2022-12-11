@@ -23,10 +23,13 @@ export class MainScreenController {
         this.fieldModel.onCellsCreated.on(GameEvents.onCellsCreated, this.createCells, this);
 
         this.mainScreenView.onShuffleBtnClick.on(Button.EventType.CLICK, this.onShuffleBtnClick, this);
-        this.resourcesModel.subscribe(ResourceTypes.Shuffle, this.onSuffleApplied.bind(this));
+        this.resourcesModel.listenResource(ResourceTypes.Shuffle, GameEvents.onResourceSpend, this.onSuffleApplied.bind(this));
+        this.resourcesModel.listenResource(ResourceTypes.Shuffle, GameEvents.onResourceUpdated, this.onShuffleCountUpdated.bind(this));
 
         this.mainScreenView.onBombBtnClick.on(Button.EventType.CLICK, this.onBombBtnClick, this);
-        this.resourcesModel.subscribe(ResourceTypes.Bomb, this.onBombApplied.bind(this))
+        this.resourcesModel.listenResource(ResourceTypes.Bomb, GameEvents.onResourceSpend, this.onBombApplied.bind(this));
+        this.resourcesModel.listenResource(ResourceTypes.Bomb, GameEvents.onResourceUpdated, this.onBombCountUpdated.bind(this));
+
     }
 
 
@@ -52,19 +55,26 @@ export class MainScreenController {
 
     private onBombApplied(count: number) {
         this.fieldModel.addModifier(CellTypes.BOMB);
+    }
+
+    private onBombCountUpdated(count: number) {
         this.mainScreenView.updateBombCount(count);
     }
 
     private onBombBtnClick() {
-        this.resourcesModel.spendResource(ResourceTypes.Bomb)
+        this.resourcesModel.spendResource(ResourceTypes.Bomb, 1)
+    }
+
+    private onShuffleCountUpdated(count: number) {
+        this.mainScreenView.updateShuffleCount(count);
     }
 
     private onSuffleApplied(count: number) {
         this.fieldModel.shuffle();
-        this.mainScreenView.updateShuffleCount(count);
+
     }
 
     private onShuffleBtnClick() {
-        this.resourcesModel.spendResource(ResourceTypes.Shuffle)
+        this.resourcesModel.spendResource(ResourceTypes.Shuffle, 1)
     }
 }

@@ -12,6 +12,11 @@ export class ResourceItem {
     }
     public set count(v: number) {
         this._count = v;
+        this.onUpdate.emit(GameEvents.onResourceUpdated, this._count);
+    }
+
+    public spend(count: number) {
+        this.count -= count;
         this.onUpdate.emit(GameEvents.onResourceSpend, this._count);
     }
 }

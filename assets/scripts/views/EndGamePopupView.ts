@@ -18,7 +18,9 @@ export class EndGamePopupView extends Component {
     }
 
     onDestroy() {
-        this.resrartButton.node.off(Button.EventType.CLICK, this.resetGame, this);
+        if (this.resrartButton !== null) {
+            this.resrartButton.node.off(Button.EventType.CLICK, this.resetGame, this);
+        }
     }
 
     onEnable() {

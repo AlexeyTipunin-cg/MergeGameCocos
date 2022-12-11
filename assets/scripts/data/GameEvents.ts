@@ -8,5 +8,6 @@ export enum GameEvents {
     onCellsCreated,
     onNoPairs,
     onShuffle,
-    onResourceSpend
+    onResourceSpend,
+    onResourceUpdated
 }

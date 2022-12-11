@@ -15,7 +15,7 @@ export class ResourcesModel {
     this.resources.clear();
 
     let shuffle = new ResourceItem();
-    shuffle.type = ResourceTypes.Shuffle
+    shuffle.type = ResourceTypes.Shuffle;
     shuffle.count = this.gameConfig.shufflesCount;
     shuffle.name = "Shuffle";
 
@@ -41,18 +41,18 @@ export class ResourcesModel {
     return this.resources.get(resType).name;
   }
 
-  public spendResource(resType: ResourceTypes): void {
+  public spendResource(resType: ResourceTypes, count: number): void {
     let item = this.resources.get(resType);
     if (item.count > 0) {
-      item.count--;
+      item.spend(count);
     }
   }
 
-  public subscribe(resType: ResourceTypes, cb: (count: number) => void): void {
-    this.resources.get(resType).onUpdate.on(GameEvents.onResourceSpend, cb)
+  public listenResource(resType: ResourceTypes, gameEvent: GameEvents, cb: (count: number) => void): void {
+    this.resources.get(resType).onUpdate.on(gameEvent, cb)
   }
 
-  public unsubscribe(resType: ResourceTypes, cb: (count: number) => void): void {
-    this.resources.get(resType).onUpdate.off(GameEvents.onResourceSpend, cb)
+  public unsubscribeResource(resType: ResourceTypes, gameEvent: GameEvents, cb: (count: number) => void): void {
+    this.resources.get(resType).onUpdate.off(gameEvent, cb)
   }
 }
