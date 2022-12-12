@@ -8,7 +8,7 @@ import { CellData } from '../../data/CellData';
 import { CellTypes } from '../../data/CellTypes';
 import { ResourcesModel } from '../../models/ResourcesModel';
 import { ResourceTypes } from '../../data/ResourceItem';
-export class MainScreenController {
+export class FieldController {
     private fieldModel: FieldModel;
     private resourcesModel: ResourcesModel;
     private mainScreenView: MainScreenView = null;

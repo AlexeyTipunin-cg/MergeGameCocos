@@ -5,7 +5,7 @@ import { ScoreModel } from './models/ScoreModel';
 import { VictoryModel } from './models/VictoryModel';
 import { FieldModel } from './field/FieldModel';
 import { GameEvents } from './data/GameEvents';
-import { MainScreenController as MainScreenController } from './views/main_screen/MainScreenController';
+import { FieldController as FieldController } from './views/main_screen/FieldController';
 import { ResourcesModel } from './models/ResourcesModel';
 import { FieldChangeData } from './field/FieldChangeData';
 export class GameController {
@@ -17,7 +17,7 @@ export class GameController {
     private resourcesModel: ResourcesModel = null;
     private victoryController: VictoryModel = null;
     private fieldModel: FieldModel = new FieldModel();
-    private mainScreenController: MainScreenController = null;
+    private mainScreenController: FieldController = null;
 
     constructor(gameConfig: GameConfig, gameViewsStorage: GameViewsStorage) {
         this.gameConfig = gameConfig;
@@ -39,7 +39,7 @@ export class GameController {
         this.gameViewsStorage.mainScreenView.init(this.scoreController, this.turnsController, this.resourcesModel);
         this.gameViewsStorage.endGamePopupView.init(this.victoryController);
 
-        this.mainScreenController = new MainScreenController(this.fieldModel, this.resourcesModel, this.gameViewsStorage.mainScreenView);
+        this.mainScreenController = new FieldController(this.fieldModel, this.resourcesModel, this.gameViewsStorage.mainScreenView);
 
         this.turnsController.setTurns(this.gameConfig.turnsCount);
         this.mainScreenController.createField(this.gameConfig);
