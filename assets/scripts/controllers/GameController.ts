@@ -1,13 +1,13 @@
-import { GameViewsStorage } from './views/GameViewsStorage';
-import { GameConfig } from './config/GameConfig';
-import { TurnsModel } from './models/TurnsModel';
-import { ScoreModel } from './models/ScoreModel';
-import { VictoryModel } from './models/VictoryModel';
-import { FieldModel } from './field/FieldModel';
-import { GameEvents } from './data/GameEvents';
-import { FieldController as FieldController } from './views/main_screen/FieldController';
-import { ResourcesModel } from './models/ResourcesModel';
-import { FieldChangeData } from './field/FieldChangeData';
+import { GameViewsStorage } from '../views/GameViewsStorage';
+import { GameConfig } from '../config/GameConfig';
+import { TurnsModel } from '../models/TurnsModel';
+import { ScoreModel } from '../models/ScoreModel';
+import { VictoryModel } from '../models/VictoryModel';
+import { FieldModel } from '../models/FieldModel';
+import { GameEvents } from '../data/GameEvents';
+import { FieldController as FieldController } from '../views/main_screen/FieldController';
+import { ResourcesModel } from '../models/ResourcesModel';
+import { FieldChangeData } from '../field/FieldChangeData';
 export class GameController {
 
     private gameConfig: GameConfig = null;
@@ -33,7 +33,7 @@ export class GameController {
 
         this.victoryController.onResetGame.on(GameEvents.onResetGame, this.onResetGame, this);
         this.victoryController.onGameOver.on(GameEvents.onGameOver, this.onGameEnd, this);
-        this.fieldModel.onCellsDestoy.on(GameEvents.onCellsDestoy, this.onFieldClick, this);
+        this.fieldModel.onCellsDestoy.on(GameEvents.onFieldUpdate, this.onFieldClick, this);
         this.fieldModel.onNoPairs.on(GameEvents.onNoPairs, this.onNoPairs, this)
 
         this.gameViewsStorage.mainScreenView.init(this.scoreController, this.turnsController, this.resourcesModel);

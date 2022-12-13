@@ -1,7 +1,7 @@
 import { _decorator, Component } from "cc";
 import { GameConfig } from "./config/GameConfig";
 import { GameViewsStorage } from './views/GameViewsStorage';
-import { GameController } from './GameController';
+import { GameController } from './controllers/GameController';
 const { ccclass, property } = _decorator;
 
 @ccclass("StartGame")

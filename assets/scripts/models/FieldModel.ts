@@ -1,13 +1,16 @@
 import { _decorator, Component, EventTarget, Vec3, randomRangeInt, Enum, random } from 'cc';
 import { CellData } from "../data/CellData";
-import { Field } from "./Field";
+import { Field } from "../field/Field";
 import { GameEvents } from '../data/GameEvents';
 import { SimpleCellStrategy } from '../strategies/SimpleStrategy';
 import { GameConfig } from "../config/GameConfig";
 import { CellTypes, CellColors } from '../data/CellTypes';
-import { FieldChangeData } from './FieldChangeData';
+import { FieldChangeData } from '../field/FieldChangeData';
 import { BombStrategy } from "../strategies/BombStrategy";
 import { CellStrategy } from '../strategies/CellStrategy';
+import { IFieldStrategy } from './fieldStrategies/IFieldStrategy';
+import { FieldSimpleStrategy } from './fieldStrategies/FieldSimpleStrategy';
+import { FieldPairStrategy } from './fieldStrategies/FieldPairStrategy';
 
 export class FieldModel extends Component {
   private fieldData: Field = null;
@@ -18,24 +21,15 @@ export class FieldModel extends Component {
 
   private cellModificator: CellTypes = CellTypes.SIMPLE;
   private cellColors: CellColors[] = [CellColors.BLUE, CellColors.GREEN, CellColors.PURPLE, CellColors.RED, CellColors.YELLOW];
-
-  private chooseStrategy(cellType: CellTypes): CellStrategy {
-    switch (cellType) {
-      case CellTypes.SIMPLE:
-        return new SimpleCellStrategy();
-      case CellTypes.BOMB:
-        return new BombStrategy();
-    }
-  }
+  private fieldStrategy: IFieldStrategy;
 
   public startGame(config: GameConfig): void {
     this.gameConfig = config;
     this.createField();
+    this.fieldStrategy = new FieldSimpleStrategy(this.fieldData, this.gameConfig);
   }
 
-
   public createField(): void {
-
     this.fieldData = new Field(
       this.gameConfig.cellSize.x,
       this.gameConfig.cellSize.y,
@@ -57,6 +51,10 @@ export class FieldModel extends Component {
     this.cellModificator = cellType;
   }
 
+  public changeFieldBehaviour() {
+    this.fieldStrategy = new FieldPairStrategy(this.fieldData, this.gameConfig);
+  }
+
   private createCell(x: number, y: number): CellData {
     let cellTypeNum = randomRangeInt(0, this.cellColors.length);
     let cellData = new CellData();
@@ -66,90 +64,21 @@ export class FieldModel extends Component {
     return cellData;
   }
 
-  public onTouch(pos: Vec3) {
+  public onTouch(pos: Vec3): void {
 
-    let strategy = this.chooseStrategy(this.cellModificator);
-    this.cellModificator = CellTypes.SIMPLE;
+    let clickedCell = this.fieldData.screenPosToIndex(pos);
 
-    let clickedCellIndex = this.fieldData.screenPosToIndex(pos);
+    let fieldChangeData = this.fieldStrategy.onTouch(clickedCell, this.cellModificator);
 
-    let killedCells = strategy.getCellsToDestroy(this.fieldData, clickedCellIndex);
-
-    if (killedCells.length > 0) {
-      let killedCellsData = killedCells.map((cellIndex) => this.fieldData.cells[cellIndex]);
-      killedCells.forEach(cellIndex => this.destroyCell(cellIndex))
-
-      let oldCells = Object.assign([], this.fieldData.cells);
-      let fieldCopy = Object.assign([], this.fieldData.cells);
-      for (let index = 0; index < this.fieldData.col; index++) {
-        this.packColumn(index, fieldCopy);
+    if (fieldChangeData !== null) {
+      this.cellModificator = CellTypes.SIMPLE;
+      if (!(this.fieldStrategy instanceof FieldSimpleStrategy)) {
+        this.fieldStrategy = new FieldSimpleStrategy(this.fieldData, this.gameConfig);
       }
-
-      let newCells = this.generateNewCells(fieldCopy);
-
-      let newField = new Field(
-        this.gameConfig.cellSize.x,
-        this.gameConfig.cellSize.y,
-        this.gameConfig.sizeX,
-        this.gameConfig.sizeY
-      );
-      newField.cells = fieldCopy;
-
-      let oldField = new Field(
-        this.gameConfig.cellSize.x,
-        this.gameConfig.cellSize.y,
-        this.gameConfig.sizeX,
-        this.gameConfig.sizeY
-      );
-      oldField.cells = oldCells;
-
-      this.fieldData.cells = fieldCopy;
-
-      let fieldChangeData: FieldChangeData = new FieldChangeData(killedCellsData, newCells, oldField, newField);
-      this.onCellsDestoy.emit(GameEvents.onCellsDestoy, fieldChangeData);
+      this.onCellsDestoy.emit(GameEvents.onFieldUpdate, fieldChangeData);
 
       if (!this.hasPairs(this.fieldData)) {
         this.onNoPairs.emit(GameEvents.onNoPairs);
-      }
-    }
-  }
-
-  private generateNewCells(field: CellData[]): CellData[] {
-    let newCells = [];
-    for (let colIndex = 0; colIndex < this.fieldData.col; colIndex++) {
-      let colIndecies = this.fieldData.getColumnIndices(colIndex);
-      let newIndex = 0;
-
-      for (const index of colIndecies) {
-        let cell = field[index];
-        if (!cell) {
-          let createPos = this.fieldData.row + newIndex;
-          let cellData = this.createCell(colIndex, createPos);
-          newCells.push(cellData);
-          field[index] = cellData;
-          newIndex++;
-        }
-      }
-    }
-
-    return newCells;
-  }
-
-  private packColumn(colIndex: number, fieldCopy: CellData[]): void {
-    let colIndecies = this.fieldData.getColumnIndices(colIndex);
-    let empty = undefined;
-
-    for (const itemIndex of colIndecies) {
-      const element = fieldCopy[itemIndex];
-      if (empty === undefined && !element) {
-        empty = itemIndex;
-      }
-
-      if (empty !== undefined && element) {
-        let cellData = fieldCopy[itemIndex];
-        fieldCopy[empty] = cellData;
-        fieldCopy[itemIndex] = null;
-        empty = empty + this.fieldData.col;
       }
     }
   }
@@ -175,8 +104,8 @@ export class FieldModel extends Component {
     oldField.cells = oldFieldCells;
 
     let fieldChangeData: FieldChangeData = new FieldChangeData([], [], oldField, this.fieldData);
-    this.onCellsDestoy.emit(GameEvents.onCellsDestoy, fieldChangeData);
-    
+    this.onCellsDestoy.emit(GameEvents.onFieldUpdate, fieldChangeData);
+
     if (!this.hasPairs(this.fieldData)) {
       this.onNoPairs.emit(GameEvents.onNoPairs);
     }
@@ -192,11 +121,5 @@ export class FieldModel extends Component {
       }
     }
     return false;
-  }
-
-  private destroyCell(index: number) {
-    if (this.fieldData.cells[index]) {
-      this.fieldData.cells[index] = null;
-    }
   }
 }

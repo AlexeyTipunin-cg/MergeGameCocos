@@ -23,5 +23,6 @@ export class ResourceItem {
 
 export enum ResourceTypes {
     Shuffle,
-    Bomb
+    Bomb,
+    Pair
 }

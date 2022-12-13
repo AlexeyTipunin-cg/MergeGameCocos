@@ -1,5 +1,5 @@
 import { MainScreenView } from './MainScreenView';
-import { FieldModel } from '../../field/FieldModel';
+import { FieldModel } from '../../models/FieldModel';
 import { GameEvents } from '../../data/GameEvents';
 import { GameConfig } from '../../config/GameConfig';
 import { Button, Vec3 } from 'cc';
@@ -19,7 +19,7 @@ export class FieldController {
         this.mainScreenView = mainScreenView;
 
         this.mainScreenView.fieldView.onTouchField.on(GameEvents.onTouchField, this.touchedField, this);;
-        this.fieldModel.onCellsDestoy.on(GameEvents.onCellsDestoy, this.onCellsDestroy, this);
+        this.fieldModel.onCellsDestoy.on(GameEvents.onFieldUpdate, this.onCellsDestroy, this);
         this.fieldModel.onCellsCreated.on(GameEvents.onCellsCreated, this.createCells, this);
 
         this.mainScreenView.onShuffleBtnClick.on(Button.EventType.CLICK, this.onShuffleBtnClick, this);
@@ -29,6 +29,10 @@ export class FieldController {
         this.mainScreenView.onBombBtnClick.on(Button.EventType.CLICK, this.onBombBtnClick, this);
         this.resourcesModel.listenResource(ResourceTypes.Bomb, GameEvents.onResourceSpend, this.onBombApplied.bind(this));
         this.resourcesModel.listenResource(ResourceTypes.Bomb, GameEvents.onResourceUpdated, this.onBombCountUpdated.bind(this));
+
+        this.mainScreenView.onPairBtnClick.on(Button.EventType.CLICK, this.onPairBtnClick, this);
+        this.resourcesModel.listenResource(ResourceTypes.Pair, GameEvents.onResourceSpend, this.onPairsApplied.bind(this));
+        this.resourcesModel.listenResource(ResourceTypes.Pair, GameEvents.onResourceUpdated, this.onPairCountUpdated.bind(this));
 
     }
 
@@ -76,5 +80,17 @@ export class FieldController {
 
     private onShuffleBtnClick() {
         this.resourcesModel.spendResource(ResourceTypes.Shuffle, 1)
+    }
+
+    private onPairsApplied(count: number) {
+        this.fieldModel.changeFieldBehaviour()
+    }
+
+    private onPairCountUpdated(count: number) {
+        this.mainScreenView.updatePairCount(count);
+    }
+
+    private onPairBtnClick() {
+        this.resourcesModel.spendResource(ResourceTypes.Pair, 1)
     }
 }

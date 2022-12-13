@@ -24,13 +24,20 @@ export class ResourcesModel {
     bomb.count = this.gameConfig.bombsCount;
     bomb.name = "Bomb";
 
+    let pairs = new ResourceItem();
+    pairs.type = ResourceTypes.Pair
+    pairs.count = this.gameConfig.pairsCount;
+    pairs.name = "Pairs";
+
     this.resources.set(ResourceTypes.Shuffle, shuffle);
     this.resources.set(ResourceTypes.Bomb, bomb);
+    this.resources.set(ResourceTypes.Pair, pairs);
   }
 
   public reset() {
     this.resources.get(ResourceTypes.Shuffle).count = this.gameConfig.shufflesCount;
     this.resources.get(ResourceTypes.Bomb).count = this.gameConfig.bombsCount;
+    this.resources.get(ResourceTypes.Pair).count = this.gameConfig.pairsCount;
   }
 
   public getResCount(resType: ResourceTypes): number {
