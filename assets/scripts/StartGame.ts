@@ -1,4 +1,4 @@
-import { _decorator, Component } from "cc";
+import { _decorator, Component, Canvas } from "cc";
 import { GameConfig } from "./config/GameConfig";
 import { GameViewsStorage } from './views/GameViewsStorage';
 import { GameController } from './controllers/GameController';
@@ -10,6 +10,7 @@ export class StartGame extends Component {
   private gameConfig: GameConfig = null;
   @property(GameViewsStorage)
   private gameViewsStorage: GameViewsStorage = null
+
   private gameController: GameController = null
 
   start() {

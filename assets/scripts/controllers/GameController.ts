@@ -15,9 +15,9 @@ export class GameController {
     private readonly scoreController = new ScoreModel();
     private readonly turnsController = new TurnsModel();
     private resourcesModel: ResourcesModel = null;
-    private victoryController: VictoryModel = null;
+    private victoryModel: VictoryModel = null;
     private fieldModel: FieldModel = new FieldModel();
-    private mainScreenController: FieldController = null;
+    private fieldController: FieldController = null;
 
     constructor(gameConfig: GameConfig, gameViewsStorage: GameViewsStorage) {
         this.gameConfig = gameConfig;
@@ -29,28 +29,28 @@ export class GameController {
         this.resourcesModel.setConfig(this.gameConfig);
         this.resourcesModel.init();
 
-        this.victoryController = new VictoryModel(this.scoreController, this.turnsController, this.resourcesModel, this.gameConfig);
+        this.victoryModel = new VictoryModel(this.scoreController, this.turnsController, this.resourcesModel, this.gameConfig);
 
-        this.victoryController.onResetGame.on(GameEvents.onResetGame, this.onResetGame, this);
-        this.victoryController.onGameOver.on(GameEvents.onGameOver, this.onGameEnd, this);
+        this.victoryModel.onResetGame.on(GameEvents.onResetGame, this.onResetGame, this);
+        this.victoryModel.onGameOver.on(GameEvents.onGameOver, this.onGameEnd, this);
         this.fieldModel.onCellsDestoy.on(GameEvents.onFieldUpdate, this.onFieldClick, this);
         this.fieldModel.onNoPairs.on(GameEvents.onNoPairs, this.onNoPairs, this)
 
         this.gameViewsStorage.mainScreenView.init(this.scoreController, this.turnsController, this.resourcesModel);
-        this.gameViewsStorage.endGamePopupView.init(this.victoryController);
+        this.gameViewsStorage.endGamePopupView.init(this.victoryModel);
 
-        this.mainScreenController = new FieldController(this.fieldModel, this.resourcesModel, this.gameViewsStorage.mainScreenView);
+        this.fieldController = new FieldController(this.fieldModel, this.resourcesModel, this.gameViewsStorage.mainScreenView);
 
         this.turnsController.setTurns(this.gameConfig.turnsCount);
-        this.mainScreenController.createField(this.gameConfig);
+        this.fieldController.createField(this.gameConfig);
     }
 
     private onNoPairs() {
-        this.victoryController.onNoPairs();
+        this.victoryModel.onNoPairs();
     }
 
     private onFieldClick(fieldChangeData: FieldChangeData): void {
-        this.victoryController.onTurnMade(fieldChangeData);
+        this.victoryModel.onTurnMade(fieldChangeData);
     }
 
     private onGameEnd(win: boolean): void {
@@ -68,7 +68,7 @@ export class GameController {
 
         this.turnsController.setTurns(this.gameConfig.turnsCount);
         this.scoreController.reset();
-        this.mainScreenController.resetField();
-        this.mainScreenController.createField(this.gameConfig);
+        this.fieldController.resetField();
+        this.fieldController.createField(this.gameConfig);
     }
 }

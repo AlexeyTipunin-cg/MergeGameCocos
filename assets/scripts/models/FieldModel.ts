@@ -6,8 +6,6 @@ import { SimpleCellStrategy } from '../strategies/SimpleStrategy';
 import { GameConfig } from "../config/GameConfig";
 import { CellTypes, CellColors } from '../data/CellTypes';
 import { FieldChangeData } from '../field/FieldChangeData';
-import { BombStrategy } from "../strategies/BombStrategy";
-import { CellStrategy } from '../strategies/CellStrategy';
 import { IFieldStrategy } from './fieldStrategies/IFieldStrategy';
 import { FieldSimpleStrategy } from './fieldStrategies/FieldSimpleStrategy';
 import { FieldPairStrategy } from './fieldStrategies/FieldPairStrategy';
